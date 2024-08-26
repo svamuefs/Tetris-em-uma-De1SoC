@@ -28,7 +28,7 @@ void catchSIGINT(int signum) { sair = 1; }
 #define SPAWN_BLOCK_X //Coordenada X de surgimento do bloco
 #define SPAWN_BLOCK_Y //Coordenada Y de surgimento do bloco
 #define LINHA 8 // Quantidade de linhas de blocos
-#define COLUNA 15 // Quantidade de colunas de blocos AAA
+#define COLUNA 15 // Quantidade de colunas de blocos 
 
 // Estrutura de dados para os blocos
 typedef struct {
