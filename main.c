@@ -276,6 +276,18 @@ int atualPosX, int atualPosY)
 	}
 }
 
+/*
+Baseando se na matriz do formato do tetromino, essa função busca
+na matriz de colisão se há alguma parede na mesma posição caso o
+tetromino se movesse para as coordenadas novaPosX e novaPosY.
+Parametros: 
+int matrizColisao[][] : matriz de colisao a ser consultada
+Tetromino *tetromino : ponteiro apontando para o tipo de tetromino a ser movido
+int novaPosX e int novaPosY : coordenadas da possível nova posição
+
+Obs: a posição do tetromino é determinada pela posição da ancora em relação
+a matriz de colisão
+*/
 bool testarColisao(int matrizColisao[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], 
 Tetromino *tetromino, int novaPosX, int novaPosY)
 {	
