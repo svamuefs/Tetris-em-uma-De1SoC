@@ -29,6 +29,8 @@
 #define LINHAS_TETROMINO 2 // Altura máxima do bloco
 #define SPAWN_BLOCK_X //Coordenada X de surgimento do bloco
 #define SPAWN_BLOCK_Y //Coordenada Y de surgimento do bloco
+#define TETROMINO_FLUTUANTE_X // Coordenada X atual do tetromino  
+#define TETROMINO_FLUTUANTE_Y
 #define COLUNAS_TABULEIRO 15 // Quantidade de colunas de blocos 
 #define LINHAS_TABULEIRO 10 // Quantidade de linhas de blocos
 
@@ -36,8 +38,6 @@
 typedef struct {
   	int formato[COLUNAS_TETROMINO][LINHAS_TETROMINO]; //0 não tem bloco, 1 tem bloco
   	short cor;        // Cor do bloco
-    int ancoraX;  //cordenadas referência do tetromino
-    int ancoraY;
 } Tetromino;
 
 //TETROMINOS
@@ -47,16 +47,16 @@ Desenho:
 0110
 0110
 */
-	Tetromino tetrominoO = {{{0,0}, {1,1}, {1,1}, {0,0}}, 0, 0, 0};
+	Tetromino tetrominoO = {{{0,0}, {1,1}, {1,1}, {0,0}}, 0};
 /*0001
   0111*/
-	Tetromino tetrominoL = {{{0,0}, {0,1}, {0,1}, {1,1}}, 1, 0, 0};
+	Tetromino tetrominoL = {{{0,0}, {0,1}, {0,1}, {1,1}}, 1};
 /*1000
   1110*/
-	Tetromino tetrominoJ = {{{1,1}, {0,1}, {0,1}, {0,0}}, 2, 0, 0};
+	Tetromino tetrominoJ = {{{1,1}, {0,1}, {0,1}, {0,0}}, 2};
 /*1111
   0000*/
-	Tetromino tetrominoI = {{{1,0}, {1,0}, {1,0}, {1,0}}, 3, 0, 0};
+	Tetromino tetrominoI = {{{1,0}, {1,0}, {1,0}, {1,0}}, 3};
 
 //!!IGNORAR!!
 // void interpreta_botoes(int *botoes, bool *pause, bool *reset); // Função para interpretar os botões e gerar sinal de pause ou reset
@@ -67,16 +67,26 @@ Desenho:
 
 void IniciarMapaColisao(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO]);
 void PrintMatriz(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO]);
-bool testarColisao(int matrizColisao[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromino *tetromino, int x, int y);	
+bool TestarColisao(int matrizColisao[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromino *tetromino, int x, int y);	
+bool Mover(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromino *tetromino, int direcao, int atualPosX, int atualPosY);
+void TranslacaoTetromino(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromino *tetromino, int atualPosX, int atualPosY, int novaPosX, int novaPosY);
+void DesenharTetromino(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY, int cor);
 
 int main() {
 
 	int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO];
 	IniciarMapaColisao(matriz);
 	PrintMatriz(matriz);
+	printf("\n");
+	DesenharTetromino(matriz, &tetrominoO, 5, 5, 1);
+	PrintMatriz(matriz);
+	printf("\n");
+	Mover(matriz, &tetrominoO,-1, 5, 5);
+	PrintMatriz(matriz);
+	printf("\n");
 
 	//teste
-	if(testarColisao(matriz, &tetrominoO, 0, 0)){
+	if(TestarColisao(matriz, &tetrominoO, 0, 0)){
 		printf("Há colisão");
 	} else {
 		printf("Não há colisão");
@@ -300,7 +310,10 @@ void DesenharTetromino(int matriz[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], Tetromin
     {
         for(j = 0; j < LINHAS_TETROMINO; j++)
         {
-            matriz[PosY+i][PosX+j] = cor;
+			if(tetromino->formato[i][j] == 1)
+			{
+            	matriz[PosY+i][PosX+j] = cor;
+			}
         }
     }
 }
@@ -317,7 +330,7 @@ int novaPosX e int novaPosY : coordenadas da possível nova posição
 Obs: a posição do tetromino é determinada pela posição da ancora em relação
 a matriz de colisão
 */
-bool testarColisao(int matrizColisao[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], 
+bool TestarColisao(int matrizColisao[COLUNAS_TABULEIRO][LINHAS_TABULEIRO], 
 Tetromino *tetromino, int novaPosX, int novaPosY)
 {	
 	int i;
@@ -327,13 +340,14 @@ Tetromino *tetromino, int novaPosX, int novaPosY)
 	{
 		for (j = 0; j < LINHAS_TETROMINO; j++) 
 		{
-			if(matrizColisao[novaPosY+i][novaPosX+j]) 
+			if(matrizColisao[novaPosY+i][novaPosX+j] == 1 && tetromino->formato[i][j] == 1) 
 			{
+				//colisão
 				return true;
 			}
 		}
     }
-
+	//não há colisão
 	return false;	
 }
 
