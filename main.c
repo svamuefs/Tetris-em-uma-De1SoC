@@ -33,7 +33,7 @@
 #define LINHAS_TABULEIRO 20 // Quantidade de colunas de blocos no tabuleiro
 #define COLUNAS_TABULEIRO 20 // Quantidade de linhas de blocos no tabuleiro
 #define MAX_LINHAS_LIMPAR 2 // imite maximo de linhas que podem ser limpas
-#define QUANTIDADE_TETROMINOS 4 // Quantidade de tetrominos no jogo
+#define QUANTIDADE_TETROMINOS 7 // Quantidade de tetrominos no jogo
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
 #define COOLDOWN_GRAVIDADE 60 // Tempo em ticks do cooldown da gravidade
