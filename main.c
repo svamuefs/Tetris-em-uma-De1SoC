@@ -1,4 +1,4 @@
-//Código público no github que pegamos emprestado para fins didáticos.
+//Código públic0 no github que pegamos emprestado para fins didáticos.
 //O produto final será completamente distinto e original.
 
 /* Criação de um jogo inspirado em Tetris para ser executado em uma DE1-SoC
@@ -214,17 +214,23 @@ int main() {
 				accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z,&acel_mg);
 				printf("\n acel_rdy: %d \n X: %d \n acel_tap: %d \n acel_dtap: %d \n", acel_rdy, acel_tap, acel_dtap, acel_x);
 
-				if (acel_x > -50 && acel_x < 50) { // Validação para evitar trepidação da barra
-				} else if (acel_x < 0) {
+				if (acel_x < -25)
+				{
 					direcao = -1;
-				} else if (acel_x > 0) {
+					cooldownMovimento = 0;
+				} 
+				else if (acel_x > 25) 
+				{
 					direcao = 1;
-				} else {}
+					cooldownMovimento = 0;
+				} 
+				else 
+				{
+					direcao = 0;
+				}
 
 				Mover(matriz, &tetrominoFlutuanteTipo,
 					direcao, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
-				
-				cooldownMovimento = 0;
 
 			}
 			else 
