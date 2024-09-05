@@ -26,12 +26,12 @@
 #define video_BLACK 0x00
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
-#define LINHAS_TETROMINO 2 // Largura máxima do bloco
-#define COLUNAS_TETROMINO 4 // Altura máxima do bloco
-#define SPAWN_BLOCK_X 3 //Coordenada X de surgimento do bloco
-#define SPAWN_BLOCK_Y 0 //Coordenada Y de surgimento do bloco
-#define LINHAS_TABULEIRO 20 // Quantidade de colunas de blocos 
-#define COLUNAS_TABULEIRO 20 // Quantidade de linhas de blocos
+#define LINHAS_TETROMINO 4 // Largura máxima do tetromino
+#define COLUNAS_TETROMINO 4 // Altura máxima do tetromino
+#define SPAWN_BLOCK_X 3 //Coordenada X de surgimento do tetromino
+#define SPAWN_BLOCK_Y 0 //Coordenada Y de surgimento do tetromino
+#define LINHAS_TABULEIRO 20 // Quantidade de colunas de blocos no tabuleiro
+#define COLUNAS_TABULEIRO 20 // Quantidade de linhas de blocos no tabuleiro
 #define MAX_LINHAS_LIMPAR 2 // imite maximo de linhas que podem ser limpas
 #define QUANTIDADE_TETROMINOS 4 // Quantidade de tetrominos no jogo
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
@@ -42,48 +42,65 @@
 // Tetromino é o nome das peças do tetris :)
 typedef struct {
   	int formato[LINHAS_TETROMINO][COLUNAS_TETROMINO]; //0 não tem bloco, 1 tem bloco
-  	short cor;        // Cor do bloco
+  	int cor;        // Cor do bloco, o index da lista de cores abaixo
 } Tetromino;
 
-// typedef struct{
-// 	short cor;
-// 	bool solido;
-// } Celula;
+short cores[] = {video_BLACK, video_WHITE, video_YELLOW, video_ORANGE, video_BLUE, video_CYAN,
+				 video_MAGENTA, video_GREEN, video_RED};
 
 //TETROMINOS
 
-/*
-Desenho:
-0110
-0110
-*/
-	Tetromino tetrominoO = {{{0,1,1,0}, {0,1,1,0}}, video_YELLOW};
-/*0001
-  0111*/
-	Tetromino tetrominoL = {{{0,0,0,1}, {0,1,1,1}}, video_RED};
-/*1000
-  1110*/
-	Tetromino tetrominoJ = {{{1,0,0,0}, {1,1,1,0}}, video_BLUE};
-/*1111
-  0000*/
-	Tetromino tetrominoI = {{{1,1,1,1}, {0,0,0,0}}, video_CYAN};
+	Tetromino tetrominoO = {{{0,0,0,0} ,
+							 {0,1,1,0} ,
+							 {0,1,1,0} ,
+							 {0,0,0,0}}, 2};
+
+	Tetromino tetrominoL = {{{0,0,0,0} ,
+							 {0,0,0,1} , 
+							 {0,1,1,1} ,
+							 {0,0,0,0}}, 3};
+							 
+	Tetromino tetrominoJ = {{{0,0,0,0} ,
+							 {0,1,0,0} , 
+							 {0,1,1,1} ,
+							 {0,0,0,0}}, 4};
+
+	Tetromino tetrominoI = {{{0,0,0,0} , 
+							 {1,1,1,1} , 
+							 {0,0,0,0} ,
+							 {0,0,0,0}}, 5};
+
+	Tetromino tetrominoT = {{{0,0,0,0} , 
+							 {0,0,1,0} , 
+							 {0,1,1,1} ,
+							 {0,0,0,0}}, 6};
+
+	Tetromino tetrominoS = {{{0,0,0,0} , 
+							 {0,0,1,1} , 
+							 {0,1,1,0} ,
+							 {0,0,0,0}}, 7};
+
+	Tetromino tetrominoZ = {{{0,0,0,0} , 
+							 {0,1,1,0} , 
+							 {0,0,1,1} ,
+							 {0,0,0,0}}, 8};							 						
 
 	int tetrominoFlutuanteX; // Coordenada X atual do tetromino  
 	int tetrominoFlutuanteY; // Coordenada X atual do tetromino  
 	Tetromino tetrominoFlutuanteTipo; // Coordenada X atual do tetromino  
 
 void IniciarMapaColisao(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
-void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
+void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], short cores[]);
 bool TestarColisao(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int x, int y);	
 bool Mover(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao, int *atualPosX, int *atualPosY);
 void TranslacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int atualPosX, int atualPosY, int novaPosX, int novaPosY);
-void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY, int cor);
+void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY, short cores[]);
 void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[MAX_LINHAS_LIMPAR]);
 void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[MAX_LINHAS_LIMPAR]);
 bool TemInput(int *direcao);
 void interpreta_botoes(int *botoes, bool *pause, bool *reset);
 void delay(int segundos);
-void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY); 
+void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY, short cores[]); 
 
 int main() {
 	//Setup
@@ -129,6 +146,7 @@ int main() {
 
 	nLoops = 0;
 	
+	//teste
 	int j;
 	for (j = 0; j < COLUNAS_TABULEIRO; j++) {
 		matriz[18][j] = 1;
@@ -252,64 +270,8 @@ int main() {
 	}
 
 	}
-	//Testes
-
-	// int indexAleatorio = rand() % QUANTIDADE_TETROMINOS;
-
-	// DesenharTetromino(matriz, &listaTetrominos[indexAleatorio], 5, 5, 1);
-	// imprimirMatriz(matriz);
-	// printf("\n");
-
-	// int i;
-	// for (i = 0; i < COLUNAS_TABULEIRO; i++) {
-	// 	matriz[7][i] = 1;
-	// 	matriz[8][i] = 1;
-	// }
-
-	// imprimirMatriz(matriz);
-	// printf("\n");
-	
-	// int linhasCheias[MAX_LINHAS_LIMPAR];
-	// VerificaLinhaCheia(matriz, linhasCheias);
-
-	// for (i = 0; i < MAX_LINHAS_LIMPAR; i++) {
-	// 	printf("%d",linhasCheias[i]);
-	// }
-
-	// LimpaLinhas(matriz, linhasCheias);
-	// imprimirMatriz(matriz);
-	// printf("\n");
-	
-	// //teste
-	// if(TestarColisao(matriz, &tetrominoO, 0, 0)){
-	// 	printf("Há colisão");
-	// } else {
-	// 	printf("Não há colisão");
-	// }
-
-	// //!!IGNORAR TUDO COMENTADO ABAIXO!!
 
     // // signal(SIGINT, catchSIGINT);
-    // // if (KEY_open() == 0 || video_open() == 0 || accel_open() == 0) {
-    // //     printf("Erro na inicialização de periféricos.\n");
-    // //     return -1;
-    // // }
-
-    // // printf("Periféricos inicializados.\n");
-
-    // // video_erase();
-	// // video_clear();
-
-	// // Inicialização e calibração do acelerômetro
-	// // accel_init();
-	// // accel_format(1, 2);
-	// // accel_calibrate();
- 	// // int botoes, quant_blocos;
-
-    // // // int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
-
-	// int gravidade = -1;
-	// float tempoGravidade = 0.75; //segundos
 
     // int score = 0; // Pontuação do jogador
     // char str[15]; // String para exibição da pontuação
@@ -435,7 +397,7 @@ void TranslacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetrom
 }
     
 
-void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY, int cor) 
+void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY, short cores[]) 
 {
 	printf("DesenharTetromino()");
     int i;
@@ -446,7 +408,7 @@ void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromin
         {
 			if(tetromino->formato[i][j] == 1)
 			{
-            	matriz[PosY+i][PosX+j] = cor;
+            	matriz[PosY+i][PosX+j] = cores[tetromino->cor];
 			}
         }
     }
@@ -478,7 +440,7 @@ Tetromino *tetromino, int novaPosX, int novaPosY)
 	{
 		for (j = 0; j < COLUNAS_TETROMINO; j++) 
 		{
-			if(matrizColisao[novaPosY+i][novaPosX+j] == 1 && tetromino->formato[i][j] == 1) 
+			if(matrizColisao[novaPosY+i][novaPosX+j] > 0 && tetromino->formato[i][j] == 1) 
 			{
 				//colisão
 				return true;
@@ -569,7 +531,7 @@ void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int lin
 }
 
 //imprime a matriz no console
-void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]) 
+void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], short cores[]) 
 {
 	printf("imprimirMatriz()");
 	int i;
@@ -581,18 +543,18 @@ void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO])
 		for (j = 0; j < COLUNAS_TABULEIRO; j++) 
 		{
 
-			if (matriz[i][j])
+			if (matriz[i][j] > 0)
 			{
 				video_box((j*QUADRADO_LADO), (i*QUADRADO_LADO),
 					QUADRADO_LADO+(j*QUADRADO_LADO), 
-					QUADRADO_LADO+(i*QUADRADO_LADO), video_WHITE);
+					QUADRADO_LADO+(i*QUADRADO_LADO), cores[matriz[i][j]]);
 			}
 			printf("%d", matriz[i][j]);
 		}
 	}
 }
 
-void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY) 
+void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY, short cores[]) 
 {
 	printf("ExibeTetrominoFlutuante()");
 	int i;
@@ -607,7 +569,7 @@ void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlu
 			{
 				video_box((tetrominoFlutuanteX+j)*QUADRADO_LADO, (tetrominoFlutuanteY+i)*QUADRADO_LADO,
 					QUADRADO_LADO+((tetrominoFlutuanteX+j)*QUADRADO_LADO), 
-					QUADRADO_LADO+((tetrominoFlutuanteY+i)*QUADRADO_LADO), tetrominoFlutuanteTipo->cor);
+					QUADRADO_LADO+((tetrominoFlutuanteY+i)*QUADRADO_LADO), cores[tetrominoFlutuanteTipo->cor]);
 			}
 		}
 	}
