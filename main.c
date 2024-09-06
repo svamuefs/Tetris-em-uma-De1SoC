@@ -27,13 +27,11 @@
 #define video_BLACK 0x00
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
-#define LINHAS_TETROMINO 4 // Largura máxima do tetromino
-#define COLUNAS_TETROMINO 4 // Altura máxima do tetromino
+#define BLOCOS_POR_PECA 4 // Quantidade de blocos que compõe as peças
 #define SPAWN_BLOCK_X 3 //Coordenada X de surgimento do tetromino
 #define SPAWN_BLOCK_Y 0 //Coordenada Y de surgimento do tetromino
-#define LINHAS_TABULEIRO 15 // Quantidade de colunas de blocos no tabuleiro
-#define COLUNAS_TABULEIRO 10 // Quantidade de linhas de blocos no tabuleiro
-#define MAX_LINHAS_LIMPAR 4 // imite maximo de linhas que podem ser limpas
+#define LINHAS_TABULEIRO 15 // Quantidade de colunas de blocos no tabuleiro, contando com chão
+#define COLUNAS_TABULEIRO 12 // Quantidade de linhas de blocos no tabuleiro, contando com paredes
 #define QUANTIDADE_TETROMINOS 7 // Quantidade de tetrominos no jogo
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
@@ -42,7 +40,7 @@
 
 // Tetromino é o nome das peças do tetris :)
 typedef struct {
-  	int formato[LINHAS_TETROMINO][COLUNAS_TETROMINO]; //0 não tem bloco, 1 tem bloco
+  	int formato[BLOCOS_POR_PECA][BLOCOS_POR_PECA]; //0 não tem bloco, 1 tem bloco
   	int cor;        // Cor do bloco, o index da lista de cores abaixo
 } Tetromino;
 
@@ -96,14 +94,13 @@ bool TestarColisao(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetro
 bool Mover(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao, int *atualPosX, int *atualPosY);
 // void TranslacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int atualPosX, int atualPosY, int novaPosX, int novaPosY);
 void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY);
-void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[MAX_LINHAS_LIMPAR]);
-void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[MAX_LINHAS_LIMPAR]);
+void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[BLOCOS_POR_PECA]);
+void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[BLOCOS_POR_PECA]);
 bool TemInput(int *direcao);
 void interpreta_botoes(int *botoes, bool *pause, bool *reset, int *sentido);
 void delay(int segundos);
 void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY, short cores[]); 
-void rotacaoTetromino(Tetromino *tetrominoFlutuanteTipo, int sentido);
-
+void rotacaoTetromino(matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuanteTipo, int sentido);
 
 int main() {
 	//Setup
@@ -118,8 +115,9 @@ int main() {
 	bool pecaFlutuanteExiste = false;
 	bool gameOver = false;
 
-	Tetromino listaTetrominos[QUANTIDADE_TETROMINOS] = {tetrominoO, tetrominoL, tetrominoJ, tetrominoI, tetrominoS, tetrominoZ, tetrominoT};
-	int linhasCheias[MAX_LINHAS_LIMPAR];
+	Tetromino listaTetrominos[] = {tetrominoO, tetrominoL, tetrominoJ, tetrominoI, tetrominoS, tetrominoZ, tetrominoT};
+	int quantidadeTetrominos = sizeof(listaTetrominos)/sizeof(listaTetrominos[0]);
+	int linhasCheias[BLOCOS_POR_PECA];
 	int cooldownGravidade = 0;
 	int cooldownMovimento = 0;
 	int direcao = 0;
@@ -245,7 +243,7 @@ int main() {
 			VerificaLinhaCheia(matriz, linhasCheias);
 			LimpaLinhas(matriz, linhasCheias);
 
-			int indexAleatorio = rand() % QUANTIDADE_TETROMINOS;
+			int indexAleatorio = rand() % quantidadeTetrominos;
 			memcpy(&tetrominoFlutuanteTipo, &listaTetrominos[indexAleatorio], sizeof(listaTetrominos[indexAleatorio]));
 			tetrominoFlutuanteX = SPAWN_BLOCK_X;
 			tetrominoFlutuanteY = SPAWN_BLOCK_Y;
@@ -414,7 +412,7 @@ bool Mover(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino
 Sentido horario : sentido = 1
 Sentido anti-horario : sentido = 0
 */
-void rotacaoTetromino(Tetromino *tetrominoFlutuanteTipo, int sentido)
+void rotacaoTetromino(matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuanteTipo, int sentido)
 {
 	if (sentido != 0)
 	{
@@ -422,24 +420,36 @@ void rotacaoTetromino(Tetromino *tetrominoFlutuanteTipo, int sentido)
 		int i;
 		int j;
 
-		int matrizTemp[LINHAS_TETROMINO][COLUNAS_TETROMINO];
+		int matrizTemp[BLOCOS_POR_PECA][BLOCOS_POR_PECA];
 
 		memcpy(&matrizTemp, tetrominoFlutuanteTipo->formato, sizeof(tetrominoFlutuanteTipo->formato));
 
-		for(i = 0; i < LINHAS_TETROMINO; i++)
+		for(i = 0; i < BLOCOS_POR_PECA; i++)
 		{
-			for(j = 0; j < COLUNAS_TETROMINO; j++)
+			for(j = 0; j < BLOCOS_POR_PECA; j++)
 			{	
 				if (sentido == 1)
 				{
-					tetrominoFlutuanteTipo->formato[COLUNAS_TETROMINO-j-1][i] = matrizTemp[i][j];
+					tetrominoFlutuanteTipo->formato[BLOCOS_POR_PECA-j-1][i] = matrizTemp[i][j];
 				}
 				else if (sentido == -1)
 				{
-					tetrominoFlutuanteTipo->formato[j][LINHAS_TETROMINO-i-1] = matrizTemp[i][j];
+					tetrominoFlutuanteTipo->formato[j][BLOCOS_POR_PECA-i-1] = matrizTemp[i][j];
 				}
 				
 			}
+		}
+		while (TestarColisao(matriz, tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY))
+		{
+			//da pra melhorar, talvez não seja muito confiavel com tabuleiros de poucas colunas
+			if (tetrominoFlutuanteX > COLUNAS_TABULEIRO/2)
+			{
+				tetrominoFlutuanteX--;
+			}
+			else
+			{
+				tetrominoFlutuanteX++;
+			}	
 		}
 	}
 }
@@ -459,9 +469,9 @@ void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromin
 	printf("DesenharTetromino()");
     int i;
     int j;
-    for(i = 0; i < LINHAS_TETROMINO; i++)
+    for(i = 0; i < BLOCOS_POR_PECA; i++)
     {
-        for(j = 0; j < COLUNAS_TETROMINO; j++)
+        for(j = 0; j < BLOCOS_POR_PECA; j++)
         {
 			if(tetromino->formato[i][j] == 1)
 			{
@@ -493,9 +503,9 @@ Tetromino *tetromino, int novaPosX, int novaPosY)
 	int i;
   	int j;
 
-  	for (i = 0; i < LINHAS_TETROMINO; i++) 
+  	for (i = 0; i < BLOCOS_POR_PECA; i++) 
 	{
-		for (j = 0; j < COLUNAS_TETROMINO; j++) 
+		for (j = 0; j < BLOCOS_POR_PECA; j++) 
 		{
 			if(matrizColisao[novaPosY+i][novaPosX+j] > 0 && tetromino->formato[i][j] == 1) 
 			{
@@ -508,7 +518,7 @@ Tetromino *tetromino, int novaPosX, int novaPosY)
 	return false;	
 }
 
-void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[MAX_LINHAS_LIMPAR])
+void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[BLOCOS_POR_PECA])
 {
 	printf("VerificaLinhaCheia()");
 	int i;
@@ -516,7 +526,7 @@ void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], 
 	bool cheia;
 
 	//limpar lista de linhas a serem limpadas
-	for(i = 0; i < MAX_LINHAS_LIMPAR; i++)
+	for(i = 0; i < BLOCOS_POR_PECA; i++)
 	{
 		linhasCheias[i] = -1;
 	}
@@ -545,7 +555,7 @@ void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], 
 			indexLinhasCheias ++;
 		}
 		
-		if (indexLinhasCheias == MAX_LINHAS_LIMPAR)
+		if (indexLinhasCheias == BLOCOS_POR_PECA)
 		{
 			break;
 		}
@@ -553,7 +563,7 @@ void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], 
 }
 
 //limpa a linha do tabuleiro ao completar
-void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[MAX_LINHAS_LIMPAR])
+void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[BLOCOS_POR_PECA])
 {
 	printf("LimpaLinhas()");
 	int i;
@@ -561,7 +571,7 @@ void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int lin
 	int k;
 	
 	//percorre todas as linhas da lista de linhas para tirar
-	for(k = 0; k < MAX_LINHAS_LIMPAR; k++)
+	for(k = 0; k < BLOCOS_POR_PECA; k++)
 	{
 	//verifica se a linha é valida
 		if(linhas[k]>=0)
@@ -617,10 +627,10 @@ void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlu
 	int i;
 	int j;
 
-	for (i = 0; i < LINHAS_TETROMINO; i++) 
+	for (i = 0; i < BLOCOS_POR_PECA; i++) 
 	{
 		printf("\n");
-		for (j = 0; j < COLUNAS_TETROMINO; j++) 
+		for (j = 0; j < BLOCOS_POR_PECA; j++) 
 		{
 			if (tetrominoFlutuanteTipo->formato[i][j])
 			{
