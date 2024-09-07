@@ -93,7 +93,6 @@ void IniciarMapaColisao(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void imprimirMatriz(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], short cores[]);
 bool TestarColisao(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int x, int y);	
 bool Mover(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao, int *atualPosX, int *atualPosY);
-// void TranslacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int atualPosX, int atualPosY, int novaPosX, int novaPosY);
 void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY);
 void LimpaLinhas(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[BLOCOS_POR_PECA]);
 void VerificaLinhaCheia(int matrizColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[BLOCOS_POR_PECA]);
@@ -121,11 +120,9 @@ int main() {
 	int linhasCheias[BLOCOS_POR_PECA];
 	int cooldownGravidade = 0;
 	int cooldownMovimento = 0;
-	int direcao = 0;
 
 	//Movimento
 	int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
-	bool movimentoRealizado;
 	int sentido;
 
 	accel_init();
@@ -137,26 +134,7 @@ int main() {
     bool pause = false, reset = false, fim_de_jogo = false, vitoria = false, derrota = false; // Variáveis de controle
 
 	int nLoops = 0;
-	//teste
-	// // int sairLoop = 0;
-	// int i;
-	// for (i = 0; i < 5; i++)
-	// {
-	
-	// int indexAleatorio = rand() % QUANTIDADE_TETROMINOS;
-	// tetrominoFlutuanteTipo = listaTetrominos[indexAleatorio];
-	// tetrominoFlutuanteX = SPAWN_BLOCK_X;
-	// tetrominoFlutuanteY = SPAWN_BLOCK_Y;
 
-	// nLoops = 0;
-	
-	//teste
-	// int j;
-	// for (j = 0; j < COLUNAS_TABULEIRO; j++) {
-	// 	matriz[18][j] = 1;
-	// 	matriz[19][j] = 1;
-	// }
-	
 	while(nLoops != 100000)
 	{
 		//printf("Loop: %d \n", nLoops);
@@ -186,10 +164,8 @@ int main() {
 				//printf("%d", cooldownGravidade);
 				//printf("Gravidade Ativada\n");
 				//mover para baixo
-				movimentoRealizado = Mover(matriz, &tetrominoFlutuanteTipo,
-					0, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
-
-				if (!movimentoRealizado)
+				if (!Mover(matriz, &tetrominoFlutuanteTipo,
+					0, &tetrominoFlutuanteX, &tetrominoFlutuanteY))
 				{
 					//printf("Peça Congelada\n");
 					//peça foi congelada
@@ -263,15 +239,6 @@ int main() {
 
 		imprimirMatriz(matriz, cores);
 		ExibeTetrominoFlutuante(&tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY, cores);
-		
-		// Mover(matriz, &tetrominoFlutuanteTipo, 0,
-		// 	&tetrominoFlutuanteX, &tetrominoFlutuanteY);
-
-		// //printf("\n X: %d ", tetrominoFlutuanteX);
-		// //printf(" Y: %d \n", tetrominoFlutuanteY);
-
-		// VerificaLinhaCheia(matriz, linhasCheias);
-		// LimpaLinhas(matriz, linhasCheias);
 
 		video_show();
 		//printf("Fim\n");
@@ -291,8 +258,6 @@ int main() {
 	return 0;
 }
 /*
-sinval: função escrita pelos donos do repositório que "inspirou" esse código
-
 Função para leitura de entrada dos botões 
 Pause funciona com lógica de alternância 
 */
@@ -463,16 +428,6 @@ void rotacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino
 		}
 	}
 }
-
-// void TranslacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int atualPosX, int atualPosY, int novaPosX, int novaPosY)  
-// {
-// 	//printf("TranslacaoTetromino()");
-//     //Apagar posição anterior
-//     DesenharTetromino(matriz, tetromino, atualPosX, atualPosY, 0);
-//     //Desenhar nova posição
-//     DesenharTetromino(matriz, tetromino, novaPosX, novaPosY, 2);
-// }
-
 
 void DesenharTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int PosX, int PosY) 
 {
