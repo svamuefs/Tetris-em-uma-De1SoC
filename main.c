@@ -35,9 +35,10 @@
 #define QUANTIDADE_TETROMINOS 7 // Quantidade de tetrominos no jogo
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
-#define COOLDOWN_GRAVIDADE 30 // Tempo em ticks do cooldown da gravidade
+#define COOLDOWN_GRAVIDADE 2 // Tempo em ticks do cooldown da gravidade
 #define COOLDOWN_INPUT 12 // Tempo em ticks do cooldown para input do jogador
 #define INPUT_INCLINACAO 30 // Inclinação necessaria para aceitar o input do jogador
+#define GAMEOVER_TEXT "     ░▒▓██████▓▒░   ░▒▓██████▓▒░  ░▒▓██████████████▓▒░  ░▒▓████████▓▒░        ░▒▓██████▓▒░  ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓████████▓▒░ ░▒▓███████▓▒░  \n    ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░              ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░        ░▒▓█▓▒░░▒▓█▓▒░ \n    ░▒▓█▓▒░        ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░              ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓█▓▒▒▓█▓▒░  ░▒▓█▓▒░        ░▒▓█▓▒░░▒▓█▓▒░ \n    ░▒▓█▓▒▒▓███▓▒░ ░▒▓████████▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓██████▓▒░         ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓█▓▒▒▓█▓▒░  ░▒▓██████▓▒░   ░▒▓███████▓▒░  \n    ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░              ░▒▓█▓▒░░▒▓█▓▒░   ░▒▓█▓▓█▓▒░   ░▒▓█▓▒░        ░▒▓█▓▒░░▒▓█▓▒░ \n    ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░              ░▒▓█▓▒░░▒▓█▓▒░   ░▒▓█▓▓█▓▒░   ░▒▓█▓▒░        ░▒▓█▓▒░░▒▓█▓▒░ \n     ░▒▓██████▓▒░  ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓████████▓▒░        ░▒▓██████▓▒░     ░▒▓██▓▒░    ░▒▓████████▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ \n"                                                                                                                                        
 
 // Tetromino é o nome das peças do tetris :)
 typedef struct {
@@ -101,6 +102,7 @@ void interpreta_botoes(int *botoes, bool *pause, bool *reset, int *sentido);
 void delay(int segundos);
 void ExibeTetrominoFlutuante(Tetromino *tetrominoFlutuanteTipo, int tetrominoFlutuanteX, int tetrominoFlutuanteY, short cores[]); 
 void rotacaoTetromino(int matriz[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuanteTipo, int sentido);
+void GerarTetromino(Tetromino listaTetrominos[QUANTIDADE_TETROMINOS]);
 
 int main() {
 	//Setup
@@ -137,111 +139,137 @@ int main() {
 
 	while(nLoops != 100000)
 	{
-		//printf("Loop: %d \n", nLoops);
+		delay(1);
 		nLoops ++;
-
-		// if (nLoops%10 == 0)
-		// {
-		// 	//printf("Sair do loop?\n");
-		// 	scanf("%d", &sairLoop);
-		// }
+		if (reset)
+		{
+			IniciarMapaColisao(matriz); //inicia mapa vazio do jogo		
+			pecaFlutuanteExiste = false;
+			reset = false;
+		}
 		
-		//o loop será executado TICKS vezes em um segundo
-		delay(1/TICKS);
-
-		//signal(SIGINT, catchSIGINT);
-
-		video_erase();
-		video_clear();
-
-		if (pecaFlutuanteExiste)
+		if (pause)
 		{
-			//printf("Peça flutuante existe\n");
+			interpreta_botoes(&botoes, &pause, &reset, &sentido);
+			if (gameOver)
+			{
+				video_text(10, 10, "Aa_-$#|\\/;.,<>");
+			}
 			
-			//Gravidade
-			if (cooldownGravidade == COOLDOWN_GRAVIDADE)
-			{
-				//printf("%d", cooldownGravidade);
-				//printf("Gravidade Ativada\n");
-				//mover para baixo
-				if (!Mover(matriz, &tetrominoFlutuanteTipo,
-					0, &tetrominoFlutuanteX, &tetrominoFlutuanteY))
-				{
-					//printf("Peça Congelada\n");
-					//peça foi congelada
-					pecaFlutuanteExiste = false;
-				}
-				cooldownGravidade = 0;
-			}
-			else 
-			{
-				//printf("Gravidade NÃO Ativada\n");
-				cooldownGravidade++;
-			}
-
-			//Movimento
-			if (cooldownMovimento == COOLDOWN_INPUT)
-			{
-				//printf("Movimento Permitido\n");
-				//usar a funcao TemInput para acessar o acelerometro
-				//retornar booleano indicando se há input do jogador
-				//definir direcao como 1 ou -1
-
-				accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z,&acel_mg);
-				//printf("\n acel_rdy: %d \n X: %d \n acel_tap: %d \n acel_dtap: %d \n", acel_rdy, acel_tap, acel_dtap, acel_x);
-
-				if (acel_x < -INPUT_INCLINACAO)
-				{
-					Mover(matriz, &tetrominoFlutuanteTipo,
-					-1, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
-					cooldownMovimento = 0;
-				} 
-				else if (acel_x > INPUT_INCLINACAO) 
-				{
-					Mover(matriz, &tetrominoFlutuanteTipo,
-					1, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
-					cooldownMovimento = 0;
-				} 
-
-			}
-			else 
-			{
-				//printf("Movimento NÃO Permitido\n");
-				cooldownMovimento++;
-			}
 		}
-		else 
+		
+		while (!reset && !pause)
 		{
-			//printf("Peça flutuante NÃO existe\n");
-			VerificaLinhaCheia(matriz, linhasCheias);
-			LimpaLinhas(matriz, linhasCheias);
 
-			int indexAleatorio = rand() % quantidadeTetrominos;
-			memcpy(&tetrominoFlutuanteTipo, &listaTetrominos[indexAleatorio], sizeof(listaTetrominos[indexAleatorio]));
-			tetrominoFlutuanteX = SPAWN_BLOCK_X;
-			tetrominoFlutuanteY = SPAWN_BLOCK_Y;
+			//printf("Loop: %d \n", nLoops);
 
-			if (TestarColisao(matriz, &tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY))
+			// if (nLoops%10 == 0)
+			// {
+			// 	//printf("Sair do loop?\n");
+			// 	scanf("%d", &sairLoop);
+			// }
+			
+			//o loop será executado TICKS vezes em um segundo
+			delay(1/TICKS);
+
+			//signal(SIGINT, catchSIGINT);
+
+			video_erase();
+			video_clear();
+
+			if (pecaFlutuanteExiste)
 			{
-				// Colisão no surgimento do tetromino
-				gameOver = true;
-				//printf("GameOver\n");
+				//printf("Peça flutuante existe\n");
+				
+				//Gravidade
+				if (cooldownGravidade == COOLDOWN_GRAVIDADE)
+				{
+					//printf("%d", cooldownGravidade);
+					//printf("Gravidade Ativada\n");
+					//mover para baixo
+					if (!Mover(matriz, &tetrominoFlutuanteTipo,
+						0, &tetrominoFlutuanteX, &tetrominoFlutuanteY))
+					{
+						//printf("Peça Congelada\n");
+						//peça foi congelada
+						pecaFlutuanteExiste = false;
+					}
+					cooldownGravidade = 0;
+				}
+				else 
+				{
+					//printf("Gravidade NÃO Ativada\n");
+					cooldownGravidade++;
+				}
 
+				//Movimento
+				if (cooldownMovimento == COOLDOWN_INPUT)
+				{
+					//printf("Movimento Permitido\n");
+					//usar a funcao TemInput para acessar o acelerometro
+					//retornar booleano indicando se há input do jogador
+					//definir direcao como 1 ou -1
+
+					accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z,&acel_mg);
+					//printf("\n acel_rdy: %d \n X: %d \n acel_tap: %d \n acel_dtap: %d \n", acel_rdy, acel_tap, acel_dtap, acel_x);
+
+					if (acel_x < -INPUT_INCLINACAO)
+					{
+						Mover(matriz, &tetrominoFlutuanteTipo,
+						-1, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
+						cooldownMovimento = 0;
+					} 
+					else if (acel_x > INPUT_INCLINACAO) 
+					{
+						Mover(matriz, &tetrominoFlutuanteTipo,
+						1, &tetrominoFlutuanteX, &tetrominoFlutuanteY);
+						cooldownMovimento = 0;
+					} 
+
+				}
+				else 
+				{
+					//printf("Movimento NÃO Permitido\n");
+					cooldownMovimento++;
+				}
 			}
-			else
+			else 
 			{
-				pecaFlutuanteExiste = true;
+				//printf("Peça flutuante NÃO existe\n");
+				VerificaLinhaCheia(matriz, linhasCheias);
+				LimpaLinhas(matriz, linhasCheias);
+
+				// int indexAleatorio = rand() % quantidadeTetrominos;
+				// memcpy(&tetrominoFlutuanteTipo, &listaTetrominos[indexAleatorio], sizeof(listaTetrominos[indexAleatorio]));
+				// tetrominoFlutuanteX = SPAWN_BLOCK_X;
+				// tetrominoFlutuanteY = SPAWN_BLOCK_Y;
+
+				GerarTetromino(listaTetrominos);
+
+				if (TestarColisao(matriz, &tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY))
+				{
+					// Colisão no surgimento do tetromino
+					gameOver = true;
+					reset = true;
+					pause = true;
+					printf("GameOver\n");
+
+				}
+				else
+				{
+					pecaFlutuanteExiste = true;
+				}
 			}
+
+			interpreta_botoes(&botoes, &pause, &reset, &sentido);
+			rotacaoTetromino(matriz, &tetrominoFlutuanteTipo, sentido);
+
+			imprimirMatriz(matriz, cores);
+			ExibeTetrominoFlutuante(&tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY, cores);
+
+			video_show();
+			//printf("Fim\n");
 		}
-
-		interpreta_botoes(&botoes, &pause, &reset, &sentido);
-		rotacaoTetromino(matriz, &tetrominoFlutuanteTipo, sentido);
-
-		imprimirMatriz(matriz, cores);
-		ExibeTetrominoFlutuante(&tetrominoFlutuanteTipo, tetrominoFlutuanteX, tetrominoFlutuanteY, cores);
-
-		video_show();
-		//printf("Fim\n");
 	}
 
     // // signal(SIGINT, catchSIGINT);
@@ -283,6 +311,15 @@ void interpreta_botoes(int *botoes, bool *pause, bool *reset, int *sentido) {
 		*sentido = 1;
 	}
 }
+
+void GerarTetromino(Tetromino listaTetrominos[QUANTIDADE_TETROMINOS])
+{
+	int indexAleatorio = rand() % QUANTIDADE_TETROMINOS;
+	memcpy(&tetrominoFlutuanteTipo, &listaTetrominos[indexAleatorio], sizeof(listaTetrominos[indexAleatorio]));
+	tetrominoFlutuanteX = SPAWN_BLOCK_X;
+	tetrominoFlutuanteY = SPAWN_BLOCK_Y;
+}
+
 /*
 Inicia o mapa de colisao, gerando o chão e as paredes do tabuleiro do jogo. 
 Ex:
