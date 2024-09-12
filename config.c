@@ -1,4 +1,4 @@
-// #include <intelfpgaup/video.h>
+#include <intelfpgaup/video.h>
 
 //Defines
 
@@ -41,10 +41,10 @@ typedef struct Tetromino{
 	int y;
 } Tetromino;
 
-const short LISTA_CORES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+// const short LISTA_CORES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
-// const short LISTA_CORES[] = {video_BLACK, video_WHITE, video_YELLOW, video_ORANGE, video_BLUE,
-//                  video_CYAN, video_MAGENTA, video_GREEN, video_RED};
+const short LISTA_CORES[] = {video_BLACK, video_WHITE, video_YELLOW, video_ORANGE, video_BLUE,
+                 video_CYAN, video_MAGENTA, video_GREEN, video_RED};
 
 //TETROMINOS
 
