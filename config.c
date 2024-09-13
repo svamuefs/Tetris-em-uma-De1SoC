@@ -7,6 +7,16 @@
 #define ALTURA_TELA 239 // Tamanho da tela VGA
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 
+#define MARGEM_ESQUERDA_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
+
+#define MARGEM_ESQUERDA_TABULEIRO 5 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_TABULEIRO 0 // Em quantidade de quadrados(QUADRADO_LADO)
+
+#define MARGEM_ESQUERDA_PREVIEW 19 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
+#define SEPARACAO_PREVIEW 1 // Em quantidade de quadrados(QUADRADO_LADO)
+
 #define QUANTIDADE_TETROMINOS 7 //Quantidade de tetrominos no jogo
 #define BLOCOS_POR_PECA 4 // Quantidade de blocos que compõe as peças
 #define SPAWN_BLOCK_X 3 //Coordenada X de surgimento do tetromino

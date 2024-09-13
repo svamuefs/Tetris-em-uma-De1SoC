@@ -27,7 +27,7 @@
 void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void Delay(int segundos);
 void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
-void ExibeTetrominoFlutuante(Tetromino *tetromino); 
+void ImprimirTetromino(Tetromino *tetromino, int x, int y); 
 void Resetar(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], bool *pecaFlutuanteExiste, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 void Pause();
 
@@ -43,6 +43,7 @@ void LimpaLinhas(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[
 void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido);
 bool Mover(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao);
 void RotacaoTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int sentido);
+void Hold(Tetromino *tetromino, Tetromino *hold, bool *canHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 
 int main() {
 	//Setup
@@ -56,7 +57,7 @@ int main() {
 	printf("Inicio do Setup");
 
 	Tetromino tetrominoFlutuante;
-	Tetromino tetrominoHold;
+	Tetromino tetrominoHold = {{-1}};
 
 	Tetromino tetrominoPreview[TAMANHO_PREVIEW];
 
@@ -80,7 +81,7 @@ int main() {
 	
     int inputSW, inputKEY;  // Valor retornado pelo KEY_read()
 	int sentido; // Sentido do giro do peça: -1 = anti horário, 1 = horário
-	bool hold, duploGiro;
+	bool hold, canHold,duploGiro;
     bool pause = true, reset = true;
 
 	printf("Fim do Setup, Inicio do jogo");
@@ -113,7 +114,7 @@ int main() {
 					if (!Mover(tabuleiro, &tetrominoFlutuante, 0))
 					{
 						printf("Peça Congelada\n");
-						hold = true;
+						canHold = true;
 						//peça foi congelada
 						pecaFlutuanteExiste = false;
 					}
@@ -186,22 +187,29 @@ int main() {
 
 			printf("AQUI POHA\n");
 			ReceberInput(&gameOver, &hold , &duploGiro, &sentido);
-			// if (duploGiro)
-			// {
-			// 	RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
-			// 	RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
-			// }
-			
-		if (hold)
-		{
-			hold();
-		}
-		
 
+			if (duploGiro)
+			{
+				RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
+				RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
+				duploGiro = false;
+			}
+			
+			if (hold)
+			{
+				Hold(&tetrominoFlutuante, &tetrominoHold, &canHold);
+			}
+		
 			RotacaoTetromino(tabuleiro, &tetrominoFlutuante, sentido);
 
 			ImprimirTabuleiro(tabuleiro);
-			ExibeTetrominoFlutuante(&tetrominoFlutuante);
+			ImprimirTetromino(&tetrominoFlutuante, tetrominoFlutuante.x, tetrominoFlutuante.y);
+			ImprimirTetromino(&tetrominoHold, 12, 0);
+			int i;
+			for(i = 0; i < TAMANHO_PREVIEW; i++)
+			{
+				ImprimirTetromino(&tetrominoPreview[i], 12, i + 3);
+			}
 
 			video_show();
 			printf("Fim\n");
@@ -214,6 +222,8 @@ int main() {
 		{
 			SW_read(&inputSW);
 			KEY_read(&inputKEY);
+			printf("%d\n", inputSW);
+			printf("%d\n", inputKEY);
 			Delay(1/10);
 		}
 		gameOver = false;
@@ -267,14 +277,22 @@ void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido)
 	
 }
 
-void hold(Tetromino *tetromino, Tetromino *hold, bool *canHold) 
+void Hold(Tetromino *tetromino, Tetromino *hold, bool *canHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW]) 
 {
-    if(*canHold)
-    {
-        Tetromino temp = *tetromino;
-        memcpy(tetromino, hold, sizeof(*tetromino));
-        memcpy(hold, &temp, sizeof(*tetromino));
-        *canHold = false;
+	if(*canHold)
+	{
+		Tetromino temp = *tetromino;
+		if (*hold[0][0] == -1) // se hold estiver vazia
+		{
+			GerarTetromino(tetromino, tetrominoPreview);
+		}
+		else
+		{
+			memcpy(tetromino, hold, sizeof(*tetromino));
+		}
+		
+		memcpy(hold, &temp, sizeof(*tetromino));
+		*canHold = false;
     }
 }
 
@@ -620,16 +638,21 @@ void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO])
 
 			if (tabuleiro[i][j] > 0)
 			{
-				video_box((j*QUADRADO_LADO), (i*QUADRADO_LADO),
-					QUADRADO_LADO+(j*QUADRADO_LADO), 
-					QUADRADO_LADO+(i*QUADRADO_LADO), LISTA_CORES[tabuleiro[i][j]]);
+				video_box(
+					((MARGEM_ESQUERDA_TABULEIRO + j)*QUADRADO_LADO), 
+					((MARGEM_TOPO_TABULEIRO + i)*QUADRADO_LADO),
+
+					QUADRADO_LADO+((MARGEM_ESQUERDA_TABULEIRO + j)*QUADRADO_LADO), 
+					QUADRADO_LADO+((MARGEM_TOPO_TABULEIRO + i)*QUADRADO_LADO),
+
+					LISTA_CORES[tabuleiro[i][j]]);
 			}
 			printf("%d", tabuleiro[i][j]);
 		}
 	}
 }
 
-void ExibeTetrominoFlutuante(Tetromino *tetromino) 
+void ImprimirTetromino(Tetromino *tetromino, int x, int y) 
 {
 	printf("Exibetetromino()\n");
 	int i;
@@ -642,11 +665,30 @@ void ExibeTetrominoFlutuante(Tetromino *tetromino)
 		{
 			if (tetromino->formato[i][j])
 			{
-				video_box((tetromino->x+j)*QUADRADO_LADO, (tetromino->y+i)*QUADRADO_LADO,
-					QUADRADO_LADO+((tetromino->x+j)*QUADRADO_LADO), 
-					QUADRADO_LADO+((tetromino->y+i)*QUADRADO_LADO), LISTA_CORES[tetromino->cor]);
+				video_box(
+					(MARGEM_ESQUERDA_TABULEIRO + x + j)*QUADRADO_LADO, 
+					(MARGEM_TOPO_TABULEIRO + y + i)*QUADRADO_LADO,
+
+					QUADRADO_LADO+((MARGEM_ESQUERDA_TABULEIRO + x + j)*QUADRADO_LADO), 
+					QUADRADO_LADO+((MARGEM_TOPO_TABULEIRO + y + i)*QUADRADO_LADO), 
+
+					LISTA_CORES[tetromino->cor]);
 			}
 		}
+	}
+}
+
+void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
+					Tetromino *tetrominoHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW])
+{
+	ImprimirTabuleiro(tabuleiro);
+	ImprimirTetromino(&tetrominoFlutuante, tetrominoFlutuante.x, tetrominoFlutuante.y);
+	ImprimirTetromino(&tetrominoHold, MARGEM_ESQUERDA_HOLD, MARGEM_TOPO_HOLD);
+	int i;
+	for(i = 0; i < TAMANHO_PREVIEW; i++)
+	{
+		ImprimirTetromino(&tetrominoPreview[i], MARGEM_ESQUERDA_PREVIEW, 
+						(i*(BLOCOS_POR_PECA + SEPARACAO_PREVIEW)) + MARGEM_TOPO_PREVIEW);
 	}
 }
 
