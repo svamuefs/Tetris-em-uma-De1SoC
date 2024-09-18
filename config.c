@@ -27,7 +27,7 @@
 #define COLUNAS_TABULEIRO 12 // Quantidade de linhas de blocos no tabuleiro, contando com paredes
 
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
-#define COOLDOWN_GRAVIDADE 30 // Tempo em ticks do cooldown da gravidade
+#define COOLDOWN_GRAVIDADE 15 // Tempo em ticks do cooldown da gravidade
 #define COOLDOWN_INPUT 12 // Tempo em ticks do cooldown para input do jogador
 #define INPUT_INCLINACAO 30 // Inclinação necessaria para aceitar o input do jogador
 
@@ -127,3 +127,19 @@ const Tetromino * LISTA_PONTEIROS_TETROMINOS[QUANTIDADE_TETROMINOS] =
 	&TETROMINO_I, &TETROMINO_J, &TETROMINO_L, &TETROMINO_O,
 	&TETROMINO_S, &TETROMINO_T, &TETROMINO_Z
 };							 						
+
+const GAMEOVER_TEXT[8] = {"      /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$        /$$$$$$  /$$    /$$ /$$$$$$$$ /$$$$$$$ ",}
+
+/***
+ *
+ *     /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/       /$$__  $$| $$   | $$| $$_____/| $$__  $$
+ *    | $$  \__/| $$  \ $$| $$$$  /$$$$| $$            | $$  \ $$| $$   | $$| $$      | $$  \ $$
+ *    | $$ /$$$$| $$$$$$$$| $$ $$/$$ $$| $$$$$         | $$  | $$|  $$ / $$/| $$$$$   | $$$$$$$/
+ *    | $$|_  $$| $$__  $$| $$  $$$| $$| $$__/         | $$  | $$ \  $$ $$/ | $$__/   | $$__  $$
+ *    | $$  \ $$| $$  | $$| $$\  $ | $$| $$            | $$  | $$  \  $$$/  | $$      | $$  \ $$
+ *    |  $$$$$$/| $$  | $$| $$ \/  | $$| $$$$$$$$      |  $$$$$$/   \  $/   | $$$$$$$$| $$  | $$
+ *     \______/ |__/  |__/|__/     |__/|________/       \______/     \_/    |________/|__/  |__/
+ *                                                                                              
+ *                                                                                              
+ *                                                                                              
+ */
