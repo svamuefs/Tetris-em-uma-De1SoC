@@ -30,6 +30,7 @@ void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void ImprimirTetromino(Tetromino *tetromino, int x, int y); 
 void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
 					Tetromino *tetrominoHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW], int *score);
+void ImprimirGameOver();
 void Resetar(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], bool *pecaFlutuanteExiste, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 void Pause();
 
@@ -96,13 +97,11 @@ int main() {
 	{
 		while (!gameOver)
 		{
-			
 			//o loop será executado TICKS vezes em um segundo
 			Delay(1/TICKS);
 
 			//signal(SIGINT, catchSIGINT);
 
-			video_erase();
 			video_clear();
 
 			if (pecaFlutuanteExiste)
@@ -223,7 +222,8 @@ int main() {
 			//printf("Fim\n");
 		}
 
-		// video_text(10, 10, "Game Over");
+		ImprimirGameOver();
+		
 		//printf("Game Over, Desative o reset e pressione hold para jogar novamente");
 		KEY_read(&inputKEY);
 		SW_read(&inputSW);
@@ -237,6 +237,7 @@ int main() {
 		}
 		Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
         score = 0;
+		video_erase();
 		gameOver = false;
 
 	}
@@ -635,6 +636,7 @@ void LimpaLinhas(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int 
 			tabuleiroColisao[0][0] = 1;
 			tabuleiroColisao[0][COLUNAS_TABULEIRO] = 1;
 			*score += 100;
+			video_erase();
 		}
 	}
 }
@@ -682,16 +684,28 @@ void ImprimirTetromino(Tetromino *tetromino, int x, int y)
 			if (tetromino->formato[i][j])
 			{
 				video_box(
-					(x + j)*QUADRADO_LADO, 
-					(y + i)*QUADRADO_LADO,
+					((x + j)*QUADRADO_LADO), 
+					((y + i)*QUADRADO_LADO),
 
-					QUADRADO_LADO+((x + j)*QUADRADO_LADO) - 1, 
-					QUADRADO_LADO+((y + i)*QUADRADO_LADO) - 1, 
+					QUADRADO_LADO+(((x + j)*QUADRADO_LADO)-1) - 1, 
+					QUADRADO_LADO+(((y + i)*QUADRADO_LADO)-1) - 1, 
 
 					LISTA_CORES[tetromino->cor]);
 			}
 		}
 	}
+}
+
+void ImprimirGameOver()
+{
+	int i;
+	for(i = 0; i < 19; i++)
+	{
+		//video_text(0, 0+i, GAMEOVER_GRAPHIC[i]);
+		video_text(MARGEM_ESQUERDA_GAMEOVER, MARGEM_TOPO_GAMEOVER + i , GAMEOVER_GRAPHIC[i]);
+	}
+
+	video_show();
 }
 
 void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
@@ -706,10 +720,9 @@ void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino 
 		ImprimirTetromino(&(tetrominoPreview[i]), MARGEM_ESQUERDA_PREVIEW, 
 						(i*(BLOCOS_POR_PECA + SEPARACAO_PREVIEW)) + MARGEM_TOPO_PREVIEW);
 	}
-    char texto[15];
-    sprintf(texto, "Score: %d", *score);
-    video_erase();
-	video_text(MARGEM_ESQUERDA_TABULEIRO * QUADRADO_LADO, 0, texto);
+    char textoScore[15];
+    sprintf(textoScore, "Score: %d", *score);
+	video_text(MARGEM_ESQUERDA_SCORE, MARGEM_TOPO_SCORE, textoScore);
 }
 
 // função para gerar Delay, parametro é dado em segundos
