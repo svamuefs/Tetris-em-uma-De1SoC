@@ -1,21 +1,29 @@
 #include <intelfpgaup/video.h>
+#include <stdio.h>
 
-//Defines
+// //Defines
 
 #define video_BLACK 0x00
+#define video_GRAY 0x9990
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 
 #define MARGEM_ESQUERDA_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_HOLD 7 // Em quantidade de quadrados(QUADRADO_LADO)
 
 #define MARGEM_ESQUERDA_TABULEIRO 5 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_TABULEIRO 0 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_TABULEIRO 7 // Em quantidade de quadrados(QUADRADO_LADO)
 
-#define MARGEM_ESQUERDA_PREVIEW 19 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
-#define SEPARACAO_PREVIEW 1 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_ESQUERDA_PREVIEW 16 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_PREVIEW 7 // Em quantidade de quadrados(QUADRADO_LADO)
+#define SEPARACAO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
+
+#define MARGEM_ESQUERDA_GAMEOVER 20
+#define MARGEM_TOPO_GAMEOVER 2
+
+#define MARGEM_ESQUERDA_SCORE 0
+#define MARGEM_TOPO_SCORE 15
 
 #define QUANTIDADE_TETROMINOS 7 //Quantidade de tetrominos no jogo
 #define BLOCOS_POR_PECA 4 // Quantidade de blocos que compõe as peças
@@ -23,8 +31,8 @@
 #define SPAWN_BLOCK_Y 0 //Coordenada Y de surgimento do tetromino
 #define TAMANHO_PREVIEW 4 // Quantidades de peças no preview
 
-#define LINHAS_TABULEIRO 15 // Quantidade de colunas de blocos no tabuleiro, contando com chão
-#define COLUNAS_TABULEIRO 12 // Quantidade de linhas de blocos no tabuleiro, contando com paredes
+#define LINHAS_TABULEIRO 16 // Quantidade de colunas de blocos no tabuleiro, contando com chão
+#define COLUNAS_TABULEIRO 10 // Quantidade de linhas de blocos no tabuleiro, contando com paredes
 
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
 #define COOLDOWN_GRAVIDADE 15 // Tempo em ticks do cooldown da gravidade
@@ -32,10 +40,9 @@
 #define INPUT_INCLINACAO 30 // Inclinação necessaria para aceitar o input do jogador
 
 #define TUTORIAL_TEXT "Botão 1 : Pause/Start\nBotão 2 : Reset\nBotão 3 : Giro Anti Horário\nBotão 4 : Giro Horário\n"
-#define GAMEOVER_TEXT "Fim de Jogo!\nPressione Reset(Botão 2)\n"
 #define PAUSE_TEXT "Jogo Pausado!\nPressione Pause ou Reset(Botão 1 e 2)"
 
-//Structs
+// //Structs
 
 /*
 Tetromino é o nome das peças do tetris :)
@@ -53,7 +60,7 @@ typedef struct Tetromino{
 
 // const short LISTA_CORES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
-const short LISTA_CORES[] = {video_BLACK, video_WHITE, video_YELLOW, video_ORANGE, video_BLUE,
+const short LISTA_CORES[] = {video_BLACK, video_GRAY, video_YELLOW, video_ORANGE, video_BLUE,
                  video_CYAN, video_MAGENTA, video_GREEN, video_RED};
 
 //TETROMINOS
@@ -128,18 +135,25 @@ const Tetromino * LISTA_PONTEIROS_TETROMINOS[QUANTIDADE_TETROMINOS] =
 	&TETROMINO_S, &TETROMINO_T, &TETROMINO_Z
 };							 						
 
-const GAMEOVER_TEXT[8] = {"      /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$        /$$$$$$  /$$    /$$ /$$$$$$$$ /$$$$$$$ ",}
-
-/***
- *
- *     /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/       /$$__  $$| $$   | $$| $$_____/| $$__  $$
- *    | $$  \__/| $$  \ $$| $$$$  /$$$$| $$            | $$  \ $$| $$   | $$| $$      | $$  \ $$
- *    | $$ /$$$$| $$$$$$$$| $$ $$/$$ $$| $$$$$         | $$  | $$|  $$ / $$/| $$$$$   | $$$$$$$/
- *    | $$|_  $$| $$__  $$| $$  $$$| $$| $$__/         | $$  | $$ \  $$ $$/ | $$__/   | $$__  $$
- *    | $$  \ $$| $$  | $$| $$\  $ | $$| $$            | $$  | $$  \  $$$/  | $$      | $$  \ $$
- *    |  $$$$$$/| $$  | $$| $$ \/  | $$| $$$$$$$$      |  $$$$$$/   \  $/   | $$$$$$$$| $$  | $$
- *     \______/ |__/  |__/|__/     |__/|________/       \______/     \_/    |________/|__/  |__/
- *                                                                                              
- *                                                                                              
- *                                                                                              
- */
+char GAMEOVER_GRAPHIC[19][100] = 
+{
+"  /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$ ",
+" /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/ ",
+"| $$  \\__/| $$  \\ $$| $$$$  /$$$$| $$     ",
+"| $$ /$$$$| $$$$$$$$| $$ $$/$$ $$| $$$$$    ",
+"| $$|_  $$| $$__  $$| $$  $$$| $$| $$__/    ",
+"| $$  \\ $$| $$  | $$| $$\\  $ | $$| $$     ",
+"|  $$$$$$/| $$  | $$| $$ \\/  | $$| $$$$$$$$",
+"\\______/ |__/  |__/|__/     |__/|________/",
+"",
+"  /$$$$$$  /$$    /$$ /$$$$$$$$ /$$$$$$$ ",
+" /$$__  $$| $$   | $$| $$_____/| $$__  $$",
+"| $$  \\ $$| $$   | $$| $$      | $$  \\ $$",
+"| $$  | $$|  $$ / $$/| $$$$$   | $$$$$$$/",
+"| $$  | $$ \\  $$ $$/ | $$__/   | $$__  $$",
+"| $$  | $$  \\  $$$/  | $$      | $$  \\ $$",
+"|  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$",
+" \\______/     \\_/    |________/|__/  |__/",
+"",
+"     ------Press Hold (Button 1)------"
+};
