@@ -52,7 +52,7 @@ int main() {
 	//Setup
 	//signal(SIGINT, SIGTERM);
 	srand(time(NULL)); 
-	int fd = open_and_mmap_dev_mem();
+	int fd = open_and_map();
 	if (KEY_open() == 0 || video_open() == 0 || fd == -1 || SW_open() == 0) {
 		//printf("Erro na inicialização de periféricos.\n");
 		return -1;
@@ -141,6 +141,8 @@ int main() {
 					// accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z,&acel_mg);
 					acel_x = get_calibrated_accel_x();
 					// //printf("\n acel_rdy: %d \n X: %d \n acel_tap: %d \n acel_dtap: %d \n", acel_rdy, acel_tap, acel_dtap, acel_x);
+					printf("%d\n", acel_x);
+
 
 					if (acel_x < -INPUT_INCLINACAO)
 					{
@@ -243,7 +245,7 @@ int main() {
 	}
 
     // // signal(SIGINT, catchSIGINT);
-	close_and_unmap_dev_mem(fd);
+	close_and_unmap(fd);
 	video_close();
 	KEY_close();
 	SW_close();
