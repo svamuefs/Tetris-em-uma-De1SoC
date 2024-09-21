@@ -10,15 +10,11 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 
 Para a comunicação com o acelerômetro, informações obtidas no datasheet do ADXL345 e nas aulas de Arquitetura de Computadores foram de extrema importância. Através dessas fontes, foi descoberto que se faz necessário: 
 
-• Obter o banco de registradores (Register Map) para facilitar o mapeamento;
-
-• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;
-
-• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;
-
-• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;
-
-• Obter o valor ajustado do eixo X
+	• Obter o banco de registradores (Register Map) para facilitar o mapeamento;
+	• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;
+	• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;
+	• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;
+	• Obter o valor ajustado do eixo X
 
 Mais adiante, será explicado detalhadamente essas etapas.
 
