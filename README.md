@@ -1,4 +1,4 @@
-# Tetris-em-uma-De1-SoC
+# Tetris em DE1-SoC
 
 ## Introdução:
 
@@ -10,11 +10,11 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 
 Para a comunicação com o acelerômetro, informações obtidas no datasheet do ADXL345 e nas aulas de Arquitetura de Computadores foram de extrema importância. Através dessas fontes, foi descoberto que se faz necessário: 
 
-	• Obter o banco de registradores (Register Map) para facilitar o mapeamento;
-	• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;
-	• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;
-	• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;
-	• Obter o valor ajustado do eixo X
+• Obter o banco de registradores (Register Map) para facilitar o mapeamento;
+• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;
+• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;
+• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;
+• Obter o valor ajustado do eixo X
 
 Mais adiante, será explicado detalhadamente essas etapas.
 
@@ -28,64 +28,14 @@ O jogo foi elaborado em lingagem C por ser um requisito do problema.
 
 ## Metodologia 
 
+Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria o programa e após, foi analisado os arquivos de testes para a implementação dos métodos e atributos relacionados à cada classe. Nos arquivos, foram identificadas quatro classes implícitas envolvidas no sistema: Controller, Evento, Ingresso e Usuario. Em seguida, foi estruturado o diagrama de classes baseado na UML e debatido em sala, e por fim, houve-se a implementação do código baseado nos testes.
+
 ### Descrição de alto nível
 
-#### Acelerômetro
+#### - Acelerômetro
 
-#### Tetris
+#### - Tetris
 
 ## Conclusão
 
 ## Bibliografia
-
-####
-
-# Planejamento
-## Jogo
-### Tabuleiro
-- Matriz
-	- Área do jogo
-	- Paredes
-- Gravidade
-	- Atua de n em n tempos
-	- faz as peças flutuantes cairem uma unidade
-### Peças
-- Struct
-	- Matriz para formato
-	- Cor
-	- Coordenadas da ancora
-		- determina o ponto por onde o jogo gera a peça
-- Coordenadas da ancora da peça flutuante, para manipulação posterior
-### Movimento
-- configurar acelerometro
-### Colisão
-- Colisão com paredes e outras peças impedem a realização do movimento
-#### Colisão Vertical
-- Quando a colisão for vertical, congelar a peça
-### Pontuação
-- 1 linha = 1 ponto
-## Biblioteca Acelerometro
-
-# main.c
-## Sequência de funções
-- se: sem peça caindo
-	- limpar linhas completas
-	- gerar proxima peça
-		- se: colisão
-			- fim de jogo
-		- se não: 
-			- gerar peça
-			- resetar tempo da gravidade
-- se não:
-	- verificar se a gravidade atua ou não, se não, incrementar tempo +1
-		- Caso atue:
-			- se: colisão vertical
-				- congelar peça
-	- receber inputs
-		- validar inputs
-			- se: colisão
-				- não realizar input
-			- se não: 
-				- Realizar o movimento
-
-Trello: https://trello.com/b/MT18QH97/sd
