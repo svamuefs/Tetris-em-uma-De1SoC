@@ -1,10 +1,24 @@
+# Tetris - Sistemas Digitais (TP01)
+
+<div align="justify"> 
+
 ## Introdução:
 
-Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris utilizando a plataforma de desenvolvimento DE1-SoC com arquitetura ARM. E para isso, foi necessário a aplicação prática dos conceitos de programação em C pra fazer o Tetris, criação de biblioteca do acelerômetro usando mapeamento de memória via I2C, controle de dispositivos de entrada (botões e chaves) e saída (interface VGA) disponíveis na placa. Ao decorrer da leitura, são descritas as decisões tomadas, resultados obtidos e lições aprendidas durante o processo.
+Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris utilizando a plataforma de desenvolvimento DE1-SoC com arquitetura ARMv8. E para isso, foi necessário a aplicação prática dos conceitos de programação em C pra fazer o Tetris, criação de biblioteca do acelerômetro usando mapeamento de memória via I2C, controle de dispositivos de entrada (botões e chaves) e saída (interface VGA) disponíveis na placa. Ao decorrer da leitura, são descritas as decisões tomadas, resultados obtidos e lições aprendidas durante o processo.
 
 ## Fundamentação Teórica
 
-### Placa DE1-SoC
+### Kit de desenvolvimento DE1-SoC
+
+<p align="center">
+  <img src="imagens/de1_main.jpg" width = "400" />
+</p>
+<p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
+
+<p align="center">
+  <img src="imagens/kitDesenvolvimentoTopView.png" width = "400" />
+</p>
+<p align="center"><strong>Componentes do DE1-SoC</strong></p>
 
 A placa que foi usada para executar o jogo possue os seguintes componentes
 
@@ -59,3 +73,9 @@ Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria
 #### - Tetris
 
 ## Conclusão
+
+<div align="justify">
+
+## Bibliografia
+
+####
