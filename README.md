@@ -16,7 +16,7 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 <p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
 
 <p align="center">
-  <img src="imagens/kitDesenvolvimentoTopView.png" width = "400" />
+  <img src="imagens/kitDesenvolvimentoTopView.png" width = "800" />
 </p>
 <p align="center"><strong>Componentes do DE1-SoC</strong></p>
 
