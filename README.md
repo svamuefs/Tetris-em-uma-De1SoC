@@ -1,5 +1,10 @@
 # Tetris - Sistemas Digitais (TP01)
 
+<p align="center">
+  <img src="imagens/top45_01.jpg" width = "400" />
+</p>
+<p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
+
 <div align="justify"> 
 
 ## Introdução:
@@ -10,17 +15,9 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 
 ### Kit de desenvolvimento DE1-SoC
 
-<p align="center">
-  <img src="imagens/de1_main.jpg" width = "400" />
-</p>
-<p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
+A placa que foi usada para executar o jogo possue uma arquitetura baseada na *Altera System-on-Chip* (SoC) FPGA, que combina um Cortex-A9 dual core com cores embarcados com lógica programável. Nela vem integrado o HPS (Hard Processor System) baseado em ARM, consistindo no processador, periféricos como o acelerômetro (ADLX456) ultilizado e a interface de memória. O sistema do Hard Processor vem ligado perfeitamente à estrutura da FPGA usando um backbone interconectado de alta-bandalarga. (DE1-SoC Manual, 2019)
 
-<p align="center">
-  <img src="imagens/kitDesenvolvimentoTopView.png" width = "800" />
-</p>
-<p align="center"><strong>Componentes do DE1-SoC</strong></p>
-
-A placa que foi usada para executar o jogo possue os seguintes componentes
+Ademais, o DE1-SoC possui os seguintes componentes:
 
 	• Main Features:
 
@@ -41,6 +38,14 @@ A placa que foi usada para executar o jogo possue os seguintes componentes
 		- VGA Video out, S-Video in
 		- Ethernet, USB, Accelerometer
 		- A/D converter, PS/2
+	
+	Fonte: FPGA Academy
+
+<p align="center">
+  <img src="imagens/kitDesenvolvimentoTopView.png" width = "800" />
+</p>
+<p align="center"><strong>Componentes do DE1-SoC</strong></p>
+
 
 ### G-Sensor ADXL345
 
