@@ -1,10 +1,32 @@
-# Tetris em DE1-SoC
-
 ## Introdução:
 
 Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris utilizando a plataforma de desenvolvimento DE1-SoC com arquitetura ARM. E para isso, foi necessário a aplicação prática dos conceitos de programação em C pra fazer o Tetris, criação de biblioteca do acelerômetro usando mapeamento de memória via I2C, controle de dispositivos de entrada (botões e chaves) e saída (interface VGA) disponíveis na placa. Ao decorrer da leitura, são descritas as decisões tomadas, resultados obtidos e lições aprendidas durante o processo.
 
 ## Fundamentação Teórica
+
+### Placa DE1-SoC
+
+A placa que foi usada para executar o jogo possue os seguintes componentes
+
+	• Main Features:
+
+		- Intel® Cyclone V SoC FPGA
+			* 85k logic-element FPGA
+			* ARM Cortex A9 MPCORE
+		- 1 GB DDR, 64 MB SDRAM
+		- Micro SD Card
+
+	• Basic IO:
+
+		- 10 slide switches, 4 pushbuttons
+		- 10 LEDs, six 7-segment displays
+
+	• IO Devices:
+
+		- Audio in/out
+		- VGA Video out, S-Video in
+		- Ethernet, USB, Accelerometer
+		- A/D converter, PS/2
 
 ### G-Sensor ADXL345
 
@@ -37,5 +59,3 @@ Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria
 #### - Tetris
 
 ## Conclusão
-
-## Bibliografia
