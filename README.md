@@ -81,9 +81,12 @@ O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado
 ## Metodologia 
 
 Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão de processos para abstração do projeto.
+
 A primeira parte é o jogo Tetris, onde engloba todas as nuâncias do jogo e dos requisitos do problema.
-Já a segunda parte é o Acelerômetro, caracterizada pela comunicação do programa em C com o próprio via I2C. 
-Partindo dessa abstração, a equipe se dividiu para encontrar soluções. Ao seguir a leitura, você encontrará a descrição em alto nível de cada etapa citada.
+
+Já a segunda parte é o <li><a href="#### • Acelerômetro"> Acelerômetro</a></li>, caracterizada pela comunicação do programa em C com o próprio via I2C. E partindo dessa abstração, a equipe se dividiu para encontrar soluções.
+
+Ao seguir a leitura, você encontrará a descrição em alto nível de cada etapa citada.
 
 ### Descrição de alto nível
 
