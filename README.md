@@ -5,6 +5,15 @@
 </p>
 <p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
 
+
+<h2>  Componentes da Equipe: <br></h2>
+<uL> 
+  <li><a href="https://github.com/Silva-Alisson">Alisson Silva</a></li>
+  <li><a href="https://github.com/DaviOSC">Davi Oliveira</a></li>
+  <li><a href="https://github.com/MrLaelapz">Kauã Quintella</a></li>
+  <li><a href="https://github.com/Viktor-401">Sinval Victor</a></li>
+</ul>
+
 <div align="justify"> 
 
 ## Introdução:
@@ -15,7 +24,7 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 
 ### Kit de desenvolvimento DE1-SoC
 
-A placa que foi usada para executar o jogo possue uma arquitetura baseada na *Altera System-on-Chip* (SoC) FPGA, que combina um Cortex-A9 dual core com cores embarcados com lógica programável. Nela vem integrado o HPS (Hard Processor System) baseado em ARM, consistindo no processador, periféricos como o acelerômetro (ADLX456) ultilizado e a interface de memória. O sistema do Hard Processor vem ligado perfeitamente à estrutura da FPGA usando um backbone interconectado de alta-bandalarga. (DE1-SoC Manual, 2019)
+A placa que foi usada para executar o jogo possue uma arquitetura baseada na *Altera System-on-Chip* (SoC) FPGA, que combina um Cortex-A9 dual core com cores embarcados com lógica programável. Nela vem integrado o *HPS* (*Hard Processor System*) baseado em ARM, consistindo no processador, periféricos como o acelerômetro (ADLX456) ultilizado e a interface de memória. O sistema do Hard Processor vem ligado perfeitamente à estrutura da FPGA usando um backbone interconectado de alta-bandalarga. (DE1-SoC Manual, 2019)
 
 Ademais, o DE1-SoC possui as seguintes especificações gerais, de acordo com o FPGA Academy:
 
@@ -67,11 +76,11 @@ Na placa, já veio disponiblizado bibliotecas que fazer a comunicação com os p
 
 ### Linguagem de Programação C
 
-O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado o GCC para a compilação.
+O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado o GCC para a compilação. A IDE ultilizada foi o Visual Studio Code.
 
 ## Metodologia 
 
-Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria o programa e após, foi analisado os arquivos de testes para a implementação dos métodos e atributos relacionados à cada classe. Nos arquivos, foram identificadas quatro classes implícitas envolvidas no sistema: Controller, Evento, Ingresso e Usuario. Em seguida, foi estruturado o diagrama de classes baseado na UML e debatido em sala, e por fim, houve-se a implementação do código baseado nos testes.
+Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão . Nos arquivos, foram identificadas quatro classes implícitas envolvidas no sistema: Controller, Evento, Ingresso e Usuario. Em seguida, foi estruturado o diagrama de classes baseado na UML e debatido em sala, e por fim, houve-se a implementação do código baseado nos testes.
 
 ### Descrição de alto nível
 
@@ -86,8 +95,4 @@ Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria
 ## Bibliografia
 
 ####
-
-
-
-
 
