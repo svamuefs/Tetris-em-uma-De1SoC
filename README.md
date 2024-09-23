@@ -97,13 +97,10 @@ No Tetris bla bla bla jkkkkkkkkkdada dad adada da
 ##### Etapas Código:
 <div id="sumarioTetris">
 	<ul>
-        <li>**Tabuleiro**: 
-			- Matriz
-				- Área do jogo
-				- Paredes
-			- Gravidade
-				- Atua de n em n tempos
-				- faz as peças flutuantes cairem uma unidade
+		1. First list item
+			- First nested list item
+				- Second nested list item
+        <li>__Tabuleiro__: Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
 		</li>
 	</ul>	
 </div>
