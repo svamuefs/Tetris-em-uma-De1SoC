@@ -92,17 +92,18 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
-No Tetris bla bla bla jkkkkkkkkkdada dad adada da
+No Tetris bla bla bla Ao seguir a leitura, você encontrará a descrição em alto nível de cada etapa citada. Holladada fsjkfjskv sdfs sffsdddddfsfs fssdfsfs
 
 ##### Etapas Código:
 <div id="sumarioTetris">
-	<ul>
-		1. First list item
-			- First nested list item
-				- Second nested list item
-        <li>__Tabuleiro__: Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
-		</li>
-	</ul>	
+	
+1. __Tabuleiro__:
+	- Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
+		- Second nested list item
+<ul>
+	<li>dadadada
+	</li>
+</ul>	
 </div>
 
 
