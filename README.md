@@ -62,12 +62,16 @@ Esse sensor é um acelerômetro de 3 eixos, que realiza medições de alta resol
 
 Para a comunicação com o acelerômetro, informações obtidas no datasheet do ADXL345 e nas aulas de Arquitetura de Computadores foram de extrema importância. Através dessas fontes, foi descoberto que se faz necessário: 
 
-	• Obter o banco de registradores (Register Map) para facilitar o mapeamento;
-	• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;
-	• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;
-	• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;
-	• Obter o valor ajustado do eixo X
-
+<div id="sumarioEtapasAcelerometro">
+<ul>
+	<li>• Obter o banco de registradores (Register Map) para facilitar o mapeamento;</li>
+	<li>• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;</li>
+	<li>• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;</li>
+	<li>• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;</li>
+	<li>• Obter o valor ajustado do eixo X</li>
+</ul>	
+</div>
+	
 Mais adiante, será explicado detalhadamente essas etapas.
 
 ### Bibliotecas para acesso de periféricos
@@ -92,7 +96,7 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
-No Tetris bla bla bla Ao seguir a leitura, você encontrará a descrição em alto nível de cada etapa citada. Holladada fsjkfjskv sdfs sffsdddddfsfs fssdfsfs
+No Tetris, a porrada come solta kkkkkkk
 
 ##### Etapas Código:
 <div id="sumarioTetris">
@@ -104,12 +108,19 @@ No Tetris bla bla bla Ao seguir a leitura, você encontrará a descrição em al
 3. Movimento da peça:
 	- Será alterado mediante à comando do jogador identificado pelo G-Sensor e gravidade do jogo.
 4. Colisão:
-	- Colisão nas verticais, podendo ser peças e paredes, impede a realização do movimento adiante, mas continua tendo ação da gravidade.
+	- Colisão nas verticais, podendo ser peças e paredes, impede a realização do movimento adiante, mas continua sofrendo ação da gravidade.
 	- Já se colidir nas horizontais, a peça é congelada.
 5. Pontuação:
 	- Se o usuário completar uma linha, ele faz 100 pontos.
 6. Encerrar jogo:
 	- Quando uma peça encontar no teto da matriz do tabuleiro, o jogo encerra.
+
+<ul>
+	<li>dadadada
+	</li>
+</ul>	
+</div>
+
 
 
 #### • Acelerômetro
