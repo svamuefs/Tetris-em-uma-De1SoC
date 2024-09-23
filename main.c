@@ -20,10 +20,17 @@
 #include <string.h>
 #include "config.c"	
 #include "accel.c"
-					 					
+
+bool sair = false
+
 //Funções
 
 //do Sistema
+
+void encerrarJogo(){
+	sair = true;
+}
+
 void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void Delay(int segundos);
 void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
@@ -35,6 +42,7 @@ void Resetar(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], bool *pecaFlutu
 void Pause();
 
 //do Jogo
+
 void GerarTetromino(Tetromino *tetromino, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 void PreencherPreview(Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 bool TestarColisao(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int x, int y);	
@@ -43,200 +51,181 @@ void VerificaLinhaCheia(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int 
 void LimpaLinhas(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[BLOCOS_POR_PECA], int *score);
 
 //do Jogador
-void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido);
+
+void ReceberInput(bool *gameOver, bool *hold, bool *flip, int *sentido);
 bool Mover(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao);
 void RotacaoTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int sentido);
 void Hold(Tetromino *tetromino, Tetromino *hold, bool *canHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 
 int main() {
 	//Setup
-	//signal(SIGINT, SIGTERM);
-	srand(time(NULL)); 
+
+	//Configurar signal para encerrar jogo ao usuario usar Ctrl + C
+	signal(SIGINT, encerrarJogo());
+
+	//Mapeamento e acesso do /dev/mem para acessar o acelerometro via I2C
 	int fd = open_and_map();
+
+	//Verificação dos periféricos da DE1-SoC 
 	if (KEY_open() == 0 || video_open() == 0 || fd == -1 || SW_open() == 0) {
-		//printf("Erro na inicialização de periféricos.\n");
+		printf("Erro na inicialização de periféricos.\n");
 		return -1;
 	}
 
     I2C0_init();
     accel_init();
-  
-	//printf("Inicio do Setup");
 
-	Tetromino tetrominoFlutuante;
-	Tetromino tetrominoHold = {{-1}};
+	Tetromino tetrominoFlutuante; // Tetromino controlado pelo jogador
+	Tetromino tetrominoHold = {{-1}}; // Tetromino guardado  
 
-	Tetromino tetrominoPreview[TAMANHO_PREVIEW];
+	Tetromino tetrominoPreview[TAMANHO_PREVIEW]; // Futuros tetrominos flutuantes
 
-	int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO];
+	int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]; // Tabuleiro do jogo
 
-	bool pecaFlutuanteExiste = false;
-	bool gameOver = true;
+	// Variáveis de controle do jogo
 
-	int linhasCheias[BLOCOS_POR_PECA];
-	int cooldownGravidade = 0;
-	int cooldownMovimento = 0;
+		bool pecaFlutuanteExiste = false;  
+		bool gameOver = true;
 
+		int linhasCheias[BLOCOS_POR_PECA];
+		int cooldownGravidade = 0;
+		int cooldownMovimento = 0;
 
-	//Configuração do acelerometro
-	int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
-
-	//Variaveis controladas pelos botões
+	// Variáveis controladas pelos periféricos
 	
-    int inputSW, inputKEY;  // Valor retornado pelo KEY_read()
+    int accel_x, inputSW, inputKEY; // Recebe input dos periféricos
 	int sentido; // Sentido do giro do peça: -1 = anti horário, 1 = horário
+	bool hold = false; // True quando usuario pressionar hold
+
+	//True se o usuario ainda não tiver usado hold no tetromino flutuante atual
+	bool canHold = true; 
+	bool flip = false; // True quando usuario pressionar o botão de flip
+    bool pause = true, reset = true; // Controlados pelos switches
+
 	int score = 0;
-	bool hold = false, canHold = true, duploGiro = false;
-    bool pause = true, reset = true;
 
-	//printf("Fim do Setup, Inicio do jogo");
-
+	// Resetar/Preparar jogo
 	Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
 
-	while(true)
+	// Loop Principal
+	while(!sair)
 	{
+		srand(time(NULL)); //seed de aleatoriedade
+
+		//Loop do jogo
 		while (!gameOver)
 		{
 			//o loop será executado TICKS vezes em um segundo
 			Delay(1/TICKS);
 
-			//signal(SIGINT, catchSIGINT);
-
 			video_clear();
 
 			if (pecaFlutuanteExiste)
-			{
-				//printf("Peça flutuante existe\n");
-				
-				//Gravidade
+			{	
+				//Gravidade ativada
 				if (cooldownGravidade == COOLDOWN_GRAVIDADE)
 				{
-					//printf("%d", cooldownGravidade);
-					//printf("Gravidade Ativada\n");
-					//mover para baixo
+					/* Se não for possível mover para baixo a peça é automaticamente
+					congelada*/
 					if (!Mover(tabuleiro, &tetrominoFlutuante, 0))
 					{
-						//printf("Peça Congelada\n");
-						canHold = true;
-						hold = false;
-						//peça foi congelada
+						canHold = true; // O jogador poderar usar o hold novamente
+						hold = false; // Evita que a peça seja imediatamente trocada no resurgimento
 						pecaFlutuanteExiste = false;
 					}
 					cooldownGravidade = 0;
 				}
 				else 
 				{
-					//printf("Gravidade NÃO Ativada\n");
 					cooldownGravidade++;
 				}
-
 				//Movimento
 				if (cooldownMovimento == COOLDOWN_INPUT)
 				{
-					//printf("Movimento Permitido\n");
-					//usar a funcao TemInput para acessar o acelerometro
-					//retornar booleano indicando se há input do jogador
-					//definir direcao como 1 ou -1
+					accel_x = get_calibrated_accel_x(); // Receber inclinação da plana
 
-					// accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z,&acel_mg);
-					acel_x = get_calibrated_accel_x();
-					// //printf("\n acel_rdy: %d \n X: %d \n acel_tap: %d \n acel_dtap: %d \n", acel_rdy, acel_tap, acel_dtap, acel_x);
-					printf("%d\n", acel_x);
-
-
-					if (acel_x < -INPUT_INCLINACAO)
+					if (accel_x < -INPUT_INCLINACAO)
 					{
+						// Movimento para a esquerda
 						Mover(tabuleiro, &tetrominoFlutuante, -1);
 						cooldownMovimento = 0;
 					} 
-					else if (acel_x > INPUT_INCLINACAO) 
+					else if (accel_x > INPUT_INCLINACAO) 
 					{
+						// Movimento para a direita
 						Mover(tabuleiro, &tetrominoFlutuante, 1);
 						cooldownMovimento = 0;
 					} 
-
 				}
 				else 
 				{
-					//printf("Movimento NÃO Permitido\n");
 					cooldownMovimento++;
 				}
 			}
+			// Se a peça flutuante não existir(foi congelada no frame anterior)
 			else 
 			{
-				//printf("Peça flutuante NÃO existe\n");
+				// Verificar se há linhas cheias e limpar-las
 				VerificaLinhaCheia(tabuleiro, linhasCheias);
 				LimpaLinhas(tabuleiro, linhasCheias, &score);
 
-				// int indexAleatorio = rand() % quantidadeTetrominos;
-				// memcpy(&tetrominoFlutuante, &listaTetrominos[indexAleatorio], sizeof(listaTetrominos[indexAleatorio]));
-				// tetrominoFlutuanteX = SPAWN_BLOCK_X;
-				// tetrominoFlutuanteY = SPAWN_BLOCK_Y;
-
+				// Gerar novo tetromino flutuante
 				GerarTetromino(&tetrominoFlutuante, tetrominoPreview);
 
-				//printf("Y: %d\n", tetrominoFlutuante.y);
-				//printf("X: %d\n", tetrominoFlutuante.x);
+				// Verifica se há colisão no resurgimento do tetromino
 				if (TestarColisao(tabuleiro, &tetrominoFlutuante, SPAWN_BLOCK_X, SPAWN_BLOCK_Y))
 				{
-					// Colisão no surgimento do tetromino
+					// caso sim, o jogo encerra
 					gameOver = true;
-					//printf("GameOver\n");
 				}
 				else
 				{
 					pecaFlutuanteExiste = true;
-					//printf("AQUI POHA KRALHO\n");
-
 				}
 			}
 
-			//printf("AQUI POHA\n");
-			ReceberInput(&gameOver, &hold , &duploGiro, &sentido);
+			/* Modifica as variáveis passadas como parametros baseado no estado dos 
+			periféricos*/
+			ReceberInput(&gameOver, &hold , &flip, &sentido);
 
-			if (duploGiro)
+			// Rotação em 180 graus
+			if (flip)
 			{
 				RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
 				RotacaoTetromino(tabuleiro, &tetrominoFlutuante, 1);
-				duploGiro = false;
+				flip = false;
 			}
 
+			// Guardar peça
 			if (hold && canHold && pecaFlutuanteExiste)
 			{
 				Hold(&tetrominoFlutuante, &tetrominoHold, &canHold, tetrominoPreview);
 				hold = false;
 			}
 		
+			// Gira a peça dependendo do valor de " sentido "
 			RotacaoTetromino(tabuleiro, &tetrominoFlutuante, sentido);
-
-			// ImprimirTabuleiro(tabuleiro);
-			// ImprimirTetromino(&tetrominoFlutuante, tetrominoFlutuante.x, tetrominoFlutuante.y);
-			// ImprimirTetromino(&tetrominoHold, 12, 0);
-			// int i;
-			// for(i = 0; i < TAMANHO_PREVIEW; i++)
-			// {
-			// 	ImprimirTetromino(&(tetrominoPreview[i]), 12, i + 3);
-			// }
 
 			ImprimirTela(tabuleiro, &tetrominoFlutuante, &tetrominoHold, tetrominoPreview, &score);
 
 			video_show();
-			//printf("Fim\n");
 		}
 
+		// Gameover
 		ImprimirGameOver();
 		
-		//printf("Game Over, Desative o reset e pressione hold para jogar novamente");
 		KEY_read(&inputKEY);
 		SW_read(&inputSW);
+
+		/* O reset deve está desligado e o jogador deve pressionar hold
+		para reiniciar o jogo*/
 		while (inputSW != 0 || inputKEY != 8)
 		{
 			SW_read(&inputSW);
 			KEY_read(&inputKEY);
-			//printf("%d\n", inputSW);
-			//printf("%d\n", inputKEY);
 			Delay(1/10);
 		}
+
 		Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
         score = 0;
 		video_erase();
@@ -244,20 +233,15 @@ int main() {
 
 	}
 
-    // // signal(SIGINT, catchSIGINT);
 	close_and_unmap(fd);
 	video_close();
 	KEY_close();
 	SW_close();
 	return 0;
 }
-/*
-Função para leitura de entrada dos botões 
-Pause funciona com lógica de alternância 
-*/
-void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido) 
+
+void ReceberInput(bool *gameOver, bool *hold, bool *flip, int *sentido) 
 {
-	//printf("ReceberInput()\n");
 	int input;
 
 	KEY_read(&input);
@@ -269,7 +253,7 @@ void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido)
 	}
 	else if (input == 4)
 	{
-		*duploGiro = true;
+		*flip = true;
 	}
 	else if (input == 2)
 	{
@@ -291,46 +275,61 @@ void ReceberInput(bool *gameOver, bool *hold, bool *duploGiro, int *sentido)
 		Pause();
 		break;
 	}
-	
 }
 
+/* O jogador pode escolher guardar a peça flutuante atual, o jogador só poderá usar
+esse mecânica novamente após posicionar a peça atual*/
 void Hold(Tetromino *tetromino, Tetromino *hold, bool *canHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW]) 
 {
 	if(*canHold)
 	{
+		//Variável auxiliar
 		Tetromino temp = *tetromino;
-		if (hold->formato[0][0] == -1) // se hold estiver vazia
+
+		// verifica se o hold está vazio
+		if (hold->formato[0][0] == -1) 
 		{
+			// hold vazio: gera novo tetromino
 			GerarTetromino(tetromino, tetrominoPreview);
 		}
 		else
 		{
+			// coloca o tetromino no hold como tetromino flutuante
 			memcpy(tetromino, hold, sizeof(*tetromino));
 		}
 
+		// coloca o tetromino flutuante no hold
 		memcpy(hold, &temp, sizeof(*tetromino));
+
+		//reseta coordenadas do tetromino no hold
 		hold->x = SPAWN_BLOCK_X;
 		hold->y = SPAWN_BLOCK_Y;
+
 		*canHold = false;
     }
 }
 
+/*Gerar novo tetromino flutuante*/
 void GerarTetromino(Tetromino *tetromino,  Tetromino tetrominoPreview[TAMANHO_PREVIEW])
 {
 	int i;
 	int indexAleatorio;
 
+	// Tetromino flutuante = tetromino na primeira posição do preview
 	memcpy(tetromino, &(tetrominoPreview[0]), sizeof(*tetromino));
 
+	// mudar posições dos tetrominos no preview em uma posição
 	for(i = 0; i < TAMANHO_PREVIEW - 1; i ++)
 	{
 		memcpy(&(tetrominoPreview[i]),&(tetrominoPreview[i+1]), sizeof(*tetromino));
 	}
 
+	// gerar tetromino aleatório na ultima posição do preview
 	indexAleatorio = rand() % QUANTIDADE_TETROMINOS;
 	memcpy(&(tetrominoPreview[TAMANHO_PREVIEW-1]), LISTA_PONTEIROS_TETROMINOS[indexAleatorio], sizeof(*tetromino));
 }
 
+// preencher preview com tetrominos aleatórios
 void PreencherPreview(Tetromino tetrominoPreview[TAMANHO_PREVIEW]) 
 {
 	int i;
@@ -342,41 +341,56 @@ void PreencherPreview(Tetromino tetrominoPreview[TAMANHO_PREVIEW])
 	}
 }
 
+// Resetar jogo
 void Resetar(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], 
 			bool *pecaFlutuanteExiste, Tetromino tetrominoPreview[TAMANHO_PREVIEW])
 {
-	//printf("Resetar()");
-	IniciarTabuleiro(tabuleiro); //inicia mapa vazio do jogo		
+	IniciarTabuleiro(tabuleiro);	
 	*pecaFlutuanteExiste = false;
 	PreencherPreview(tetrominoPreview);
 }
 
+// pausar jogo
 void Pause()
 {
 	int input = 2;
+	int indexCor = 1;
+
+	// Receber input até que o jogo seja despausado
 	while (input != 0)
 		{
 			Delay(1/10);
+
+			video_clear();
+			video_erase();
+
+			// Mostrar tela de pause
+			ImprimirPause();
+			ImprimirGameTitle(indexCor);
+			if (indexCor < 9) {indexCor ++} else {indexCor = 1};
+
+			video_show();
+
 			SW_read(&input);
 		}
+
+	video_clear();
+	video_erase();
 }
 
 /*
-Inicia o mapa de colisao, gerando o chão e as paredes do tabuleiro do jogo. 
+Inicia o tabuleiro, gerando o chão e as paredes do tabuleiro do jogo. 
 Ex:
 1 0 0 0 1 
 1 0 0 0 1 
 1 0 0 0 1
 1 1 1 1 1
-uma tabuleiro composta de 0s e 1s
+uma tabuleiro composto de 0s e 1s
 1 : significa uma parede    
 0 : espaço livre
-Ver a função TestarColisao() para entender melhor o funcionamento
-Talvez seja desnecessário, discutiremos melhor
 */
 void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO])
 {
-	//printf("IniciarMapaColisão()");
 	int i;
 	int j;
 
@@ -397,48 +411,41 @@ void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO])
 }
 
 /*
-Função para mover a peça para a esquerda, direita ou pela gravidade
-Talvez seja necessário separar essa função um duas: uma para lidar com colisão 
-e outra para efetivamente mover a peça
+Função para mover a peça para a esquerda, direita ou para baixo
 Parametros: 
-int direcao : -1 , 0 ou 1
-int tabuleiroColisao : chamar a função TestarColisao()
-Tetromino *tetromino : ponteiro apontando para o tipo de tetromino a ser movido
-int atualPosX e int atualPosY : posição atual da ancora do tetromino na tabuleiro do jogo
+int direcao : -1 = esquerda , 0 = baixo ou 1 = direita
+int tabuleiro : tabuleiro do jogo
+Tetromino *tetromino : tetromino flutuante
 */
 bool Mover(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino, int direcao) 
 {
-	//printf("Mover()");
-
+	// Para baixo
     if(direcao == 0)
     {
         if(TestarColisao(tabuleiro, tetromino, tetromino->x, tetromino->y+1))
         {
-			//printf("1");
             //Há colisão e o movimento não foi realizado
-			//congelar o tetromino
+			//Congelar o tetromino
 			CongelarTetromino(tabuleiro, tetromino);
             return false;
         }
         else
-        {
-			//printf("2");
+        {;
             //Não há colisão, movimento realizado
 			tetromino->y = tetromino->y + 1;
             return true;
         }
     }
+	// Para os lados
     else
     {
         if(TestarColisao(tabuleiro, tetromino, tetromino->x + direcao, tetromino->y))
         {
-			//printf("3");
             //Há colisão e o movimento não foi realizado
             return false;
         }
         else
         {
-			//printf("4");
             //Não há colisão, movimento realizado
 			tetromino->x = tetromino->x + direcao;
             return true;
@@ -454,48 +461,60 @@ void RotacaoTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetrom
 {
 	if (sentido != 0)
 	{
-		//printf("RotacaoTetromino(), %d \n", sentido);
 		int i;
 		int j;
 
-		int tabuleiroTemp[BLOCOS_POR_PECA][BLOCOS_POR_PECA];
+		// Variáveis auxiliares
+		int matrizTemp[BLOCOS_POR_PECA][BLOCOS_POR_PECA];
 		int posXTemp = tetromino->x;
 
-		memcpy(&tabuleiroTemp, tetromino->formato, sizeof(tetromino->formato));
+		// Guardar formato atual do tetromino
+		memcpy(&matrizTemp, tetromino->formato, sizeof(tetromino->formato));
 
+		// Rotacionar tetromino
 		for(i = 0; i < BLOCOS_POR_PECA; i++)
 		{
 			for(j = 0; j < BLOCOS_POR_PECA; j++)
 			{	
 				if (sentido == 1)
 				{
-					tetromino->formato[BLOCOS_POR_PECA-j-1][i] = tabuleiroTemp[i][j];
+					// rotacionar matriz no sentido horário
+					tetromino->formato[j][BLOCOS_POR_PECA-i-1]  = matrizTemp[i][j];
 				}
 				else if (sentido == -1)
 				{
-					tetromino->formato[j][BLOCOS_POR_PECA-i-1] = tabuleiroTemp[i][j];
+					// rotacionar matriz no sentido anti horário
+					tetromino->formato[BLOCOS_POR_PECA-j-1][i] = matrizTemp[i][j];
 				}
 				
 			}
 		}
 
+		// Testar colisão com matriz rotacionada
 		i = 0;
 		while (TestarColisao(tabuleiro, tetromino, tetromino->x, tetromino->y))
 		{
-			//da pra melhorar, talvez não seja muito confiavel com tabuleiros de poucas colunas
+			//Há colisão
+
 			if (tetromino->x > COLUNAS_TABULEIRO/2)
 			{
+				/* Mover tetromino para esquerda se ele 
+				estiver no lado direito do tabuleiro*/
 				tetromino->x--;
 			}
 			else
 			{
+				// Mover para o outro lado
 				tetromino->x++;
 			}	
+			// Tentar mover o tetromino apenas duas vezes
 			if (i == 2) 
 			{
-				//printf("Não girar");
+				//Rotação falhou
+
+				// Desfazer todas as alterações feitas no tetromino
 				tetromino->x = posXTemp;
-				memcpy(tetromino->formato, &tabuleiroTemp, sizeof(tetromino->formato));
+				memcpy(tetromino->formato, &matrizTemp, sizeof(tetromino->formato));
 				break;
 			}
 			i++;
@@ -503,9 +522,10 @@ void RotacaoTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetrom
 	}
 }
 
+/*O tetromino flutuante só é escrito na matriz do tabuleiro
+quando é congelado*/
 void CongelarTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetromino) 
 {
-	//printf("CongelarTetromino()");
     int i;
     int j;
 
@@ -515,6 +535,9 @@ void CongelarTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetro
         {
 			if(tetromino->formato[i][j] == 1)
 			{
+				/* De acordo com o formato do tetromino e sua posição relativa ao
+				tabuleiro o tetromino é escrito no tabuleiro com o inteiro que representa
+				sua cor*/
             	tabuleiro[tetromino->y+i][tetromino->x+j] = tetromino->cor;
 			}
         }
@@ -522,35 +545,25 @@ void CongelarTetromino(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetro
 }
 
 /*
-1000000001
-1001111001
-1111111111
-Baseando se na tabuleiro do formato do tetromino, essa função busca
-na tabuleiro de colisão se há alguma parede na mesma posição caso o
-tetromino se movesse para as coordenadas novaPosX e novaPosY.
+Baseando se na matriz do formato do tetromino e sua posição, essa função busca
+no tabuleiro se há alguma parede na mesma posição, caso o
+tetromino se movesse para as coordenadas x e y.
 Parametros: 
-int tabuleiroColisao[][] : tabuleiro de colisao a ser consultada
-Tetromino *tetromino : ponteiro apontando para o tipo de tetromino a ser movido
-int novaPosX e int novaPosY : coordenadas da possível nova posição
-
-Obs: a posição do tetromino é determinada pela posição da ancora em relação
-a tabuleiro de colisão
+int tabuleiroColisao[][] : tabuleiro de colisao a ser consultado
+Tetromino *tetromino : ponteiro apontando para o tetromino a ser movido
+int x e int y : coordenadas da possível nova posição
 */
 bool TestarColisao(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], 
 Tetromino *tetromino, int x, int y)
 {	
-	//printf("TestarColisao()\n");
 	int i;
   	int j;
 
   	for (i = 0; i < BLOCOS_POR_PECA; i++) 
 	{
-		//printf("%d\n", i);
-
 		for (j = 0; j < BLOCOS_POR_PECA; j++) 
 		{
-			//printf("%d\n", j);
-
+			// valores maiores que 0 no tabuleiro significam colisão
 			if(tabuleiroColisao[y+i][x+j] > 0 && tetromino->formato[i][j] == 1) 
 			{
 				//colisão
@@ -562,9 +575,13 @@ Tetromino *tetromino, int x, int y)
 	return false;	
 }
 
+/*Verifica se há uma linha horizontal completa, sem qualquer descontinuidade.
+Parâmetros: 
+	- tabuleiroColisão: tabuleiro do jogo
+	- linhasCheias: lista para que a função retorne os
+	indices das linhas completas no tabuleiro*/
 void VerificaLinhaCheia(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhasCheias[BLOCOS_POR_PECA])
 {
-	//printf("VerificaLinhaCheia()");
 	int i;
 	int j;
 	bool cheia;
@@ -577,28 +594,29 @@ void VerificaLinhaCheia(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO
 
 	int indexLinhasCheias = 0;
 
-	//buscar na tabuleiro por linhas cheias
+	//buscar no tabuleiro por linhas cheias
 	i = 0;
 	for(i = 0; i < LINHAS_TABULEIRO-1; i++)
 	{
+		// valor padrão
 		cheia = true;
+
 		for(j = 1; j < COLUNAS_TABULEIRO-1; j++)
 		{
 			if(tabuleiroColisao[i][j] == 0)
 			{
+				// caso encontre um buraco
 				cheia = false;
 				break;
 			}
-
 		}
-
-		//caso encontre: adicionar o index da linha a lista de linhas cheiasn
 		if(cheia)
 		{
 			linhasCheias[indexLinhasCheias] = i;
 			indexLinhasCheias ++;
 		}
 		
+		// máximo de linhas cheias possíveis
 		if (indexLinhasCheias == BLOCOS_POR_PECA)
 		{
 			break;
@@ -609,7 +627,6 @@ void VerificaLinhaCheia(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO
 //limpa a linha do tabuleiro ao completar
 void LimpaLinhas(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int linhas[BLOCOS_POR_PECA], int *score)
 {
-	//printf("LimpaLinhas()");
 	int i;
 	int j;
 	int k;
@@ -643,16 +660,14 @@ void LimpaLinhas(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int 
 	}
 }
 
-//imprime a tabuleiro no console
+/*Mostra o tabuleiro na tela. Utilizando a biblioteca de video*/
 void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]) 
 {
-	//printf("ImprimirTabuleiro()");
 	int i;
 	int j;
 
 	for (i = 0; i < LINHAS_TABULEIRO; i++) 
 	{
-		//printf("\n");
 		for (j = 0; j < COLUNAS_TABULEIRO; j++) 
 		{
 
@@ -667,20 +682,18 @@ void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO])
 
 					LISTA_CORES[tabuleiro[i][j]]);
 			}
-			//printf("%d", tabuleiro[i][j]);
 		}
 	}
 }
 
+/*Imprime um tetromino na tela nas coordenadas x e y*/
 void ImprimirTetromino(Tetromino *tetromino, int x, int y) 
 {
-	//printf("Exibetetromino()\n");
 	int i;
 	int j;
 
 	for (i = 0; i < BLOCOS_POR_PECA; i++) 
 	{
-		//printf("\n");
 		for (j = 0; j < BLOCOS_POR_PECA; j++) 
 		{
 			if (tetromino->formato[i][j])
@@ -703,25 +716,54 @@ void ImprimirGameOver()
 	int i;
 	for(i = 0; i < 19; i++)
 	{
-		//video_text(0, 0+i, GAMEOVER_GRAPHIC[i]);
 		video_text(MARGEM_ESQUERDA_GAMEOVER, MARGEM_TOPO_GAMEOVER + i , GAMEOVER_GRAPHIC[i]);
 	}
 
 	video_show();
 }
 
+void ImprimirPause()
+{
+	int i;
+	for(i = 0; i < 13; i++)
+	{
+		video_text(MARGEM_ESQUERDA_PAUSE, MARGEM_TOPO_PAUSE + i , PAUSE_GRAPHIC[i]);
+	}
+
+	video_show();
+}
+
+void ImprimirGameTitle(int indexCor)
+{
+	int i;
+	int j;
+	for(i = 0; i < 5; i++) 
+	{
+		for(j = 0; j < 5; j++) 
+		{
+			if(GAME_TITLE_MATRIX[i][j] == 1)
+			{
+				video_pixel(MARGEM_ESQUERDA_TITLE + i, MARGEM_TOPO_TITLE + j, LISTA_CORES[indexCor]);
+			}
+		}
+	}
+}
+
+/*Imprimir tela de jogo completa*/
 void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
 					Tetromino *tetrominoHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW], int *score)
 {
 	ImprimirTabuleiro(tabuleiro);
 	ImprimirTetromino(tetrominoFlutuante, MARGEM_ESQUERDA_TABULEIRO +  tetrominoFlutuante->x, MARGEM_TOPO_TABULEIRO + tetrominoFlutuante->y);
 	ImprimirTetromino(tetrominoHold, MARGEM_ESQUERDA_HOLD, MARGEM_TOPO_HOLD);
+
 	int i;
 	for(i = 0; i < TAMANHO_PREVIEW; i++)
 	{
 		ImprimirTetromino(&(tetrominoPreview[i]), MARGEM_ESQUERDA_PREVIEW, 
 						(i*(BLOCOS_POR_PECA + SEPARACAO_PREVIEW)) + MARGEM_TOPO_PREVIEW);
 	}
+	
     char textoScore[15];
     sprintf(textoScore, "Score: %d", *score);
 	video_text(MARGEM_ESQUERDA_SCORE, MARGEM_TOPO_SCORE, textoScore);
@@ -730,7 +772,6 @@ void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino 
 // função para gerar Delay, parametro é dado em segundos
 void Delay(int segundos)
 {	
-	//printf("Delay()");
 	// converter segundos para microsegundos
     int microSegundos = 1000000 * segundos;
 

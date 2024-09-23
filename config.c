@@ -19,11 +19,17 @@
 #define MARGEM_TOPO_PREVIEW 7 // Em quantidade de quadrados(QUADRADO_LADO)
 #define SEPARACAO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
 
-#define MARGEM_ESQUERDA_GAMEOVER 20
-#define MARGEM_TOPO_GAMEOVER 2
+#define MARGEM_ESQUERDA_TITLE 0 //Em pixels
+#define MARGEM_TOPO_TITLE 0 //Em pixels
 
-#define MARGEM_ESQUERDA_SCORE 0
-#define MARGEM_TOPO_SCORE 15
+#define MARGEM_ESQUERDA_GAMEOVER 20 // Em pixels
+#define MARGEM_TOPO_GAMEOVER 2 // Em pixels
+
+#define MARGEM_ESQUERDA_PAUSE 0 // Em pixels
+#define MARGEM_TOPO_PAUSE 7 // Em pixels
+
+#define MARGEM_ESQUERDA_SCORE 0 // Em pixels
+#define MARGEM_TOPO_SCORE 15 // Em pixels
 
 #define QUANTIDADE_TETROMINOS 7 //Quantidade de tetrominos no jogo
 #define BLOCOS_POR_PECA 4 // Quantidade de blocos que compõe as peças
@@ -135,7 +141,7 @@ const Tetromino * LISTA_PONTEIROS_TETROMINOS[QUANTIDADE_TETROMINOS] =
 	&TETROMINO_S, &TETROMINO_T, &TETROMINO_Z
 };							 						
 
-char GAMEOVER_GRAPHIC[19][100] = 
+char GAMEOVER_GRAPHIC[19][60] = 
 {
 "  /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$ ",
 " /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/ ",
@@ -155,5 +161,37 @@ char GAMEOVER_GRAPHIC[19][100] =
 "|  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$",
 " \\______/     \\_/    |________/|__/  |__/",
 "",
-"     ------Press Hold (Button 1)------"
+"--- Reset Off and Press Hold to Play Again ---"
 };
+
+char PAUSE_GRAPHIC[13][60] = {
+" ____   __   _  _  ____  ____ ",
+"(  _ \\ / _\\ / )( \\/ ___)(  __)",
+" ) __//    \\) \\/ (\\___ \\ ) _) ",
+"(__)  \\_/\\_/\\____/(____/(____)",
+"",
+"[------------------ Controls ---------------------]",
+"|________Switchs________|_________Buttons_________|",
+"|       Pause  Reset    |  Hold  Flip  Spin  Spin |",
+"|[ ]     [ ]    [ ] on  |  /  \\  /  \\  /  \\  /  \\ |",
+"|[#] ... [#]    [#] off |  \\  /  \\  /  \\  /  \\  / |",
+"[-------------------------------------------------]",
+"",
+"     --- Toggle Pause Switch to Unpause ---"};
+
+/*
+#####_#####_#####_####__###_#####
+__#___#_______#___#__##__#__#____
+__#___####____#___####___#___####
+__#___#_______#___#__##__#______#
+__#___#####___#___#___#_###_####_
+*/
+
+//" TETRIS "
+int GAME_TITLE_MATRIX[5][33] = {
+{1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1},
+{0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,0,1,0,0,0,0},
+{0,0,1,0,0,0,1,1,1,1,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1},
+{0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,1},
+{0,0,1,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0},
+}
