@@ -1,7 +1,7 @@
 # Tetris - Sistemas Digitais (TP01)
 
 <p align="center">
-  <img src="imagens/top45_01.jpg" width = "400" />
+  <img src="imagens/top45_01.jpg" width = "600" />
 </p>
 <p align="center"><strong>Kit de desenvolvimento DE1-SoC</strong></p>
 
@@ -17,7 +17,7 @@ Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris
 
 A placa que foi usada para executar o jogo possue uma arquitetura baseada na *Altera System-on-Chip* (SoC) FPGA, que combina um Cortex-A9 dual core com cores embarcados com lógica programável. Nela vem integrado o HPS (Hard Processor System) baseado em ARM, consistindo no processador, periféricos como o acelerômetro (ADLX456) ultilizado e a interface de memória. O sistema do Hard Processor vem ligado perfeitamente à estrutura da FPGA usando um backbone interconectado de alta-bandalarga. (DE1-SoC Manual, 2019)
 
-Ademais, o DE1-SoC possui os seguintes componentes:
+Ademais, o DE1-SoC possui as seguintes especificações gerais, de acordo com o FPGA Academy:
 
 	• Main Features:
 
@@ -44,10 +44,12 @@ Ademais, o DE1-SoC possui os seguintes componentes:
 <p align="center">
   <img src="imagens/kitDesenvolvimentoTopView.png" width = "800" />
 </p>
-<p align="center"><strong>Componentes do DE1-SoC</strong></p>
+<p align="center"><strong>Layout e componentes do DE1-SoC</strong></p>
 
 
 ### G-Sensor ADXL345
+
+Esse sensor é um acelerômetro de 3 eixos, que realiza medições de alta resolução. A saída digitalizada é formatada em 16 bits com complemento de dois e pode ser acessada via interface I2C.
 
 Para a comunicação com o acelerômetro, informações obtidas no datasheet do ADXL345 e nas aulas de Arquitetura de Computadores foram de extrema importância. Através dessas fontes, foi descoberto que se faz necessário: 
 
@@ -65,7 +67,7 @@ Na placa, já veio disponiblizado bibliotecas que fazer a comunicação com os p
 
 ### Linguagem de Programação C
 
-O jogo foi elaborado em lingagem C por ser um requisito do problema.
+O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado o GCC para a compilação.
 
 ## Metodologia 
 
@@ -84,3 +86,8 @@ Inicialmente, foi feito o levantamento de requisitos analisando como funcionaria
 ## Bibliografia
 
 ####
+
+
+
+
+
