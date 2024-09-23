@@ -28,27 +28,23 @@ A placa que foi usada para executar o jogo possue uma arquitetura baseada na *Al
 
 Ademais, o DE1-SoC possui as seguintes especificações gerais, de acordo com o FPGA Academy:
 
-	• Main Features:
+- Main Features:
+	- Intel® Cyclone V SoC FPGA
+		- 85k logic-element FPGA
+		- ARM Cortex A9 MPCORE
+	- 1 GB DDR, 64 MB SDRAM
+	- Micro SD Card
 
-		- Intel® Cyclone V SoC FPGA
-			* 85k logic-element FPGA
-			* ARM Cortex A9 MPCORE
-		- 1 GB DDR, 64 MB SDRAM
-		- Micro SD Card
 
-	• Basic IO:
+- Basic IO:
+	- 10 slide switches, 4 pushbuttons
+	- 10 LEDs, six 7-segment displays
 
-		- 10 slide switches, 4 pushbuttons
-		- 10 LEDs, six 7-segment displays
-
-	• IO Devices:
-
-		- Audio in/out
-		- VGA Video out, S-Video in
-		- Ethernet, USB, Accelerometer
-		- A/D converter, PS/2
-	
-	Fonte: FPGA Academy
+- IO Devices:
+	- Audio in/out
+	- VGA Video out, S-Video in
+	- Ethernet, USB, Accelerometer
+	- A/D converter, PS/2
 
 <p align="center">
   <img src="imagens/kitDesenvolvimentoTopView.png" width = "800" />
@@ -64,11 +60,11 @@ Para a comunicação com o acelerômetro, informações obtidas no datasheet do 
 
 <div id="sumarioEtapasAcelerometro">
 <ul>
-	<li>• Obter o banco de registradores (Register Map) para facilitar o mapeamento;</li>
-	<li>• Abrir a pasta "/dev/mem" e mapeia a memória do I2C;</li>
-	<li>• Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;</li>
-	<li>• Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;</li>
-	<li>• Obter o valor ajustado do eixo X</li>
+	<li>Obter o banco de registradores (Register Map) para facilitar o mapeamento;</li>
+	<li>Abrir a pasta "/dev/mem" e mapeia a memória do I2C;</li>
+	<li>Inicializar o I2C, habilitando o controlador, definindo a taxa de clock e o endereço de destino do acelerômetro (0x53). Os registradores dessas informações correspondem de dentro do bloco I2C;</li>
+	<li>Configurar o acelerômetro para o modo de medição com sensibilidade de ±16g e frequência de 200 Hz;</li>
+	<li>Obter o valor ajustado do eixo X</li>
 </ul>	
 </div>
 	
@@ -96,7 +92,7 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
-No Tetris, a porrada come solta kkkkkkk
+No Tetris
 
 ##### Etapas Código:
 <div id="sumarioTetris">
@@ -133,3 +129,63 @@ No Tetris, a porrada come solta kkkkkkk
 ## Bibliografia
 
 ####
+
+
+
+
+
+
+
+
+
+
+
+# Planejamento
+## Jogo
+### Tabuleiro
+- Matriz
+	- Área do jogo
+	- Paredes
+- Gravidade
+	- Atua de n em n tempos
+	- faz as peças flutuantes cairem uma unidade
+### Peças
+- Struct
+	- Matriz para formato
+	- Cor
+	- Coordenadas da ancora
+		- determina o ponto por onde o jogo gera a peça
+- Coordenadas da ancora da peça flutuante, para manipulação posterior
+### Movimento
+- configurar acelerometro
+### Colisão
+- Colisão com paredes e outras peças impedem a realização do movimento
+#### Colisão Vertical
+- Quando a colisão for vertical, congelar a peça
+### Pontuação
+- 1 linha = 1 ponto
+## Biblioteca Acelerometro
+
+# main.c
+## Sequência de funções
+- se: sem peça caindo
+	- limpar linhas completas
+	- gerar proxima peça
+		- se: colisão
+			- fim de jogo
+		- se não: 
+			- gerar peça
+			- resetar tempo da gravidade
+- se não:
+	- verificar se a gravidade atua ou não, se não, incrementar tempo +1
+		- Caso atue:
+			- se: colisão vertical
+				- congelar peça
+	- receber inputs
+		- validar inputs
+			- se: colisão
+				- não realizar input
+			- se não: 
+				- Realizar o movimento
+
+Trello: https://trello.com/b/MT18QH97/sd
