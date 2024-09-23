@@ -80,13 +80,20 @@ O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado
 
 ## Metodologia 
 
-Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão . Nos arquivos, foram identificadas quatro classes implícitas envolvidas no sistema: Controller, Evento, Ingresso e Usuario. Em seguida, foi estruturado o diagrama de classes baseado na UML e debatido em sala, e por fim, houve-se a implementação do código baseado nos testes.
+Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão de processos para abstração do projeto.
+A primeira parte é o jogo Tetris, onde engloba todas as nuâncias do jogo e dos requisitos do problema.
+Já a segunda parte é o Acelerômetro, caracterizada pela comunicação do programa em C com o próprio via I2C. 
+Partindo dessa abstração, a equipe se dividiu para encontrar soluções. Ao seguir a leitura, você encontrará a descrição em alto nível de cada etapa citada.
 
 ### Descrição de alto nível
 
-#### - Acelerômetro
+#### • Tetris
 
-#### - Tetris
+No Tetris
+
+
+#### • Acelerômetro
+
 
 ## Conclusão
 
@@ -95,4 +102,3 @@ Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtid
 ## Bibliografia
 
 ####
-
