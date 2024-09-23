@@ -92,31 +92,33 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
-No Tetris
-
-##### Etapas Código:
-<div id="sumarioTetris">
+Para recriar uma versão fiel do jogo, foi feita uma analise no jogo original. As percepções dos mecanismos usados foram traduzidas para uma aplicação prática no projeto. No projeto, foi aplicado os conceitos do Tetris da seguinte forma. 
 	
 1. Tabuleiro:
 	- Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
+
+
 2. Peças:
 	- A peça, ou tetrominó como é chamado, é um Struct que armazena uma matriz para formato, cor, coordenadas da âncora que determina onde o jogo gera a peça de acordo com movimento e spawn dela.
+
+
 3. Movimento da peça:
 	- Será alterado mediante à comando do jogador identificado pelo G-Sensor e gravidade do jogo.
+	- O usuário do game pode mudar o sentido da peça e mover para a esquerda e para a direita.
+
+
 4. Colisão:
 	- Colisão nas verticais, podendo ser peças e paredes, impede a realização do movimento adiante, mas continua sofrendo ação da gravidade.
 	- Já se colidir nas horizontais, a peça é congelada.
+
+
 5. Pontuação:
 	- Se o usuário completar uma linha, ele faz 100 pontos.
-6. Encerrar jogo:
+
+
+6. Pause e encerrar jogo:
+	- Para pausar, basta clicar em um botão da placa.
 	- Quando uma peça encontar no teto da matriz do tabuleiro, o jogo encerra.
-
-<ul>
-	<li>dadadada
-	</li>
-</ul>	
-</div>
-
 
 
 #### • Acelerômetro
