@@ -92,14 +92,19 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
+No Tetris bla bla bla jkkkkkkkkkdada dad adada da
 
-##### Sumário
-
-No Tetris
-
+##### Etapas Código:
 <div id="sumarioTetris">
 	<ul>
-        <li>Descrição dos Equipamentos e Software Utilizados</li>
+        <li>**Tabuleiro**: 
+			- Matriz
+				- Área do jogo
+				- Paredes
+			- Gravidade
+				- Atua de n em n tempos
+				- faz as peças flutuantes cairem uma unidade
+		</li>
 	</ul>	
 </div>
 
