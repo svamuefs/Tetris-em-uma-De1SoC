@@ -97,7 +97,7 @@ No Tetris bla bla bla Ao seguir a leitura, você encontrará a descrição em al
 ##### Etapas Código:
 <div id="sumarioTetris">
 	
-1. __Tabuleiro__:
+1. Tabuleiro:
 	- Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
 		- Second nested list item
 <ul>
