@@ -99,13 +99,17 @@ No Tetris bla bla bla Ao seguir a leitura, você encontrará a descrição em al
 	
 1. Tabuleiro:
 	- Contém a matriz com a área do jogo e as paredes e a gravidade, a qual atua de _n_ em _n_ tempos e faz as peças flutuantes cairem uma unidade.
-		- Second nested list item
-<ul>
-	<li>dadadada
-	</li>
-</ul>	
-</div>
-
+2. Peças:
+	- A peça, ou tetrominó como é chamado, é um Struct que armazena uma matriz para formato, cor, coordenadas da âncora que determina onde o jogo gera a peça de acordo com movimento e spawn dela.
+3. Movimento da peça:
+	- Será alterado mediante à comando do jogador identificado pelo G-Sensor e gravidade do jogo.
+4. Colisão:
+	- Colisão nas verticais, podendo ser peças e paredes, impede a realização do movimento adiante, mas continua tendo ação da gravidade.
+	- Já se colidir nas horizontais, a peça é congelada.
+5. Pontuação:
+	- Se o usuário completar uma linha, ele faz 100 pontos.
+6. Encerrar jogo:
+	- Quando uma peça encontar no teto da matriz do tabuleiro, o jogo encerra.
 
 
 #### • Acelerômetro
