@@ -92,7 +92,17 @@ Ao seguir a leitura, você encontrará a descrição em alto nível de cada etap
 
 #### • Tetris
 
+
+##### Sumário
+
 No Tetris
+
+<div id="sumarioTetris">
+	<ul>
+        <li>Descrição dos Equipamentos e Software Utilizados</li>
+	</ul>	
+</div>
+
 
 
 #### • Acelerômetro
