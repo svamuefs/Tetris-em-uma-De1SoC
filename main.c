@@ -1,6 +1,3 @@
-// //Código públic0 no github que pegamos emprestado para fins didáticos.
-// //O produto final será completamente distinto e original.
-
 // /* Criação de um jogo inspirado em Tetris para ser executado em uma DE1-SoC
 //  - Os tetrominos serão movimentados pelo jogador por meio do acelerômetro
 //  - Todos os itens visuais serão exibidos por meio da interface VGA
