@@ -16,20 +16,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include "config.c"	
+#include <unistd.h>
+
 #include "accel.c"
 
-bool sair = false
+// bool sair = false
 
 //Funções
 
 //do Sistema
 
-void encerrarJogo(){
-	sair = true;
-}
+// void encerrarJogo(){
+// 	sair = true;
+// }
 
 void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
-void Delay(int segundos);
+void Delay(float segundos);
 void ImprimirTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void ImprimirTetromino(Tetromino *tetromino, int x, int y); 
 void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
@@ -58,7 +60,8 @@ int main() {
 	//Setup
 
 	//Configurar signal para encerrar jogo ao usuario usar Ctrl + C
-	signal(SIGINT, encerrarJogo());
+	// signal(SIGINT, encerrarJogo());
+	srand(time(NULL)); //seed de aleatoriedade
 
 	//Mapeamento e acesso do /dev/mem para acessar o acelerometro via I2C
 	int fd = open_and_map();
@@ -105,10 +108,8 @@ int main() {
 	Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
 
 	// Loop Principal
-	while(!sair)
+	while(true)
 	{
-		srand(time(NULL)); //seed de aleatoriedade
-
 		//Loop do jogo
 		while (!gameOver)
 		{
@@ -353,25 +354,31 @@ void Pause()
 	int input = 2;
 	int indexCor = 1;
 
+	video_clear();
+	video_erase();
+	ImprimirPause();
 	// Receber input até que o jogo seja despausado
 	while (input != 0)
 		{
-			Delay(1/10);
+			Delay(0.3);
 
+			//Mostrar tela de pause
 			video_clear();
-			video_erase();
-
-			// Mostrar tela de pause
-			ImprimirPause();
 			ImprimirGameTitle(indexCor);
-			if (indexCor < 9) {indexCor ++} else {indexCor = 1};
-
+			if (indexCor < 9) 
+			{
+				indexCor ++;
+			} 
+			else 
+			{
+				indexCor = 1;
+			}
 			video_show();
 
 			SW_read(&input);
 		}
 
-	video_clear();
+	// video_clear();
 	video_erase();
 }
 
@@ -736,11 +743,11 @@ void ImprimirGameTitle(int indexCor)
 	int j;
 	for(i = 0; i < 5; i++) 
 	{
-		for(j = 0; j < 5; j++) 
+		for(j = 0; j < 35; j++) 
 		{
 			if(GAME_TITLE_MATRIX[i][j] == 1)
 			{
-				video_pixel(MARGEM_ESQUERDA_TITLE + i, MARGEM_TOPO_TITLE + j, LISTA_CORES[indexCor]);
+				video_box((MARGEM_ESQUERDA_TITLE + j)*9, (MARGEM_TOPO_TITLE + i)*9, (MARGEM_ESQUERDA_TITLE + j)* 9 + 9 , (MARGEM_TOPO_TITLE + i) * 9 + 9, LISTA_CORES[indexCor]);
 			}
 		}
 	}
@@ -767,7 +774,7 @@ void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino 
 }
 
 // função para gerar Delay, parametro é dado em segundos
-void Delay(int segundos)
+void Delay(float segundos)
 {	
 	// converter segundos para microsegundos
     int microSegundos = 1000000 * segundos;
