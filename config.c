@@ -5,8 +5,6 @@
 
 #define video_BLACK 0x00
 #define video_GRAY 0x9990
-#define LARGURA_TELA 319 // Tamanho da tela VGA
-#define ALTURA_TELA 239 // Tamanho da tela VGA
 #define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 
 #define MARGEM_ESQUERDA_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
@@ -20,13 +18,13 @@
 #define SEPARACAO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
 
 #define MARGEM_ESQUERDA_TITLE 0 //Em pixels
-#define MARGEM_TOPO_TITLE 0 //Em pixels
+#define MARGEM_TOPO_TITLE 10 //Em pixels
 
 #define MARGEM_ESQUERDA_GAMEOVER 20 // Em pixels
 #define MARGEM_TOPO_GAMEOVER 2 // Em pixels
 
 #define MARGEM_ESQUERDA_PAUSE 0 // Em pixels
-#define MARGEM_TOPO_PAUSE 7 // Em pixels
+#define MARGEM_TOPO_PAUSE 35 // Em pixels
 
 #define MARGEM_ESQUERDA_SCORE 0 // Em pixels
 #define MARGEM_TOPO_SCORE 15 // Em pixels
@@ -188,10 +186,9 @@ __#___#####___#___#___#_###_####_
 */
 
 //" TETRIS "
-int GAME_TITLE_MATRIX[5][33] = {
+int GAME_TITLE_MATRIX[5][35] = {
 {1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1},
 {0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,0,1,0,0,0,0},
 {0,0,1,0,0,0,1,1,1,1,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1},
 {0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,1},
-{0,0,1,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0},
-}
+{0,0,1,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0}};
