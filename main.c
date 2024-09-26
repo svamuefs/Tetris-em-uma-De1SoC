@@ -20,15 +20,11 @@
 
 #include "accel.c"
 
-// bool sair = false
+bool sair = false;
 
 //Funções
 
 //do Sistema
-
-// void encerrarJogo(){
-// 	sair = true;
-// }
 
 void IniciarTabuleiro(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO]);
 void Delay(float segundos);
@@ -60,7 +56,7 @@ int main() {
 	//Setup
 
 	//Configurar signal para encerrar jogo ao usuario usar Ctrl + C
-	// signal(SIGINT, encerrarJogo());
+	signal(SIGINT, SIGTERM);
 	srand(time(NULL)); //seed de aleatoriedade
 
 	//Mapeamento e acesso do /dev/mem para acessar o acelerometro via I2C
@@ -108,10 +104,10 @@ int main() {
 	Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
 
 	// Loop Principal
-	while(true)
+	while(!sair)
 	{
 		//Loop do jogo
-		while (!gameOver)
+		while (!gameOver && !sair)
 		{
 			//o loop será executado TICKS vezes em um segundo
 			Delay(1/TICKS);
@@ -271,6 +267,9 @@ void ReceberInput(bool *gameOver, bool *hold, bool *flip, int *sentido)
 		break;
 	case 2 : 
 		Pause();
+		break;
+	case 4 : 
+		sair = true;
 		break;
 	}
 }
