@@ -54,11 +54,17 @@ Ademais, o DE1-SoC possui as seguintes especificações gerais, de acordo com o 
 
 ### G-Sensor ADXL345
 
-Esse sensor é um acelerômetro de 3 eixos, que realiza medições de alta resolução. A saída digitalizada é formatada em 16 bits com complemento de dois e pode ser acessada via interface I2C.
+Esse sensor é um acelerômetro de 3 eixos, que realiza medições de alta resolução. A saída digitalizada é formatada em 16 bits com complemento de dois e pode ser acessada via interface I2C e seu endereço é 0x53.
 
 Para a comunicação com o acelerômetro, informações obtidas no datasheet do ADXL345 e nas aulas de Arquitetura de Computadores foram de extrema importância. 
 	
 Mais adiante, será explicado o passo a passo para a comunicação.
+
+### Protocolo I2C
+
+O I2C (*Inter-Integrated Circuit*), é um protocolo de comunicação serial síncrono, bastante utilizado na interação entre dispositivos periféricos e processadores ou microcontroladores. A comunicação ocorre utilizando dois fios: o SDA, que transporta os dados, e o SCL, responsável pelo sinal de clock que sincroniza a troca de informações. Quando aplicamos isso no G-Sensor, ele opera como um dispositivo *slave* dentro do barramento, enquanto o processador atua como *master*, controlando toda a comunicação e o envio de comandos.
+
+Cada dispositivo conectado ao barramento I2C possui um endereço de 7 bits, o que facilita a identificação. A interação acontece quando o processador, na função de master, envia o endereço do acelerômetro e, a partir daí, realiza operações de leitura ou escrita nos registradores internos, permitindo, por exemplo, a configuração de parâmetros ou a coleta de dados do sensor.
 
 ### Bibliotecas para acesso de periféricos
 
@@ -76,7 +82,9 @@ A seguir, é demonstrado a descrição em alto nível de cada etapa citada.
 
 ### Descrição de alto nível
 
-#### • Acelerômetro
+#### Acelerômetro
+
+###### Etapas para comunicação com ADXL456
 
 Através das fontes, foi descoberto que se faz necessário seguir um passo a passo para se conectar ao G-Sensor:
 
@@ -92,10 +100,46 @@ Através das fontes, foi descoberto que se faz necessário seguir um passo a pas
 
 ###### Banco de registradores
 
-No datasheet do acelerômetro, 
+O primeiro passo foi **obter o banco de registradores** (Register Map) do ADXL456, conforme descrito no código <a href="https://github.com/svamuefs/Tetris-em-uma-De1SoC/blob/main/address.c">address.c</a>. Esse arquivo contém a definição dos principais registradores utilizados para configurar e ler dados do acelerômetro.
+
+Além disso, o código também define os registradores do controlador I2C, como **I2C0_CON**, **I2C0_TAR**, **I2C0_ENABLE**, entre outros, que são utilizados para realizar a comunicação entre o processador e o acelerômetro via protocolo I2C.
+
+###### Mapeamento da memória do I2C
+
+O acesso aos registradores do controlador I2C do processador é feito diretamente através do mapeamento de memória física. O mapeamento da memória do controlador I2C é realizado utilizando o */dev/mem*, um arquivo especial no Linux que expõe áreas de memória física do sistema para leitura e escrita.
+
+A função *mmap* mapeia essa área de memória para o espaço de endereços do processo do usuário, permitindo o acesso direto aos registradores de controle de hardware. O procedimento foi realizado com a função *open_and_map()* com o retorno de um inteiro, representando o descritor do arquivo.
+
+###### Inicialização do protocolo
 
 
-#### • Tetris
+O processo de inicialização do I2C envolve a configuração de valores específicos nos registradores do controlador no processador. Isso inclui habilitar o controlador I2C, definir o clock (configurando os registradores **I2C0_FS_SCL_HCNT** e **I2C0_FS_SCL_LCNT**), além de atribuir o endereço do acelerômetro, que é **0x53**.
+
+Os principais registradores utilizados incluem:
+
+- **I2C0_ENABLE**: Habilita o controlador I2C.
+- **I2C0_TAR:** Define o endereço do dispositivo slave.
+- **I2C0_CON:** Configura o modo de operação (master/slave) e outras características do controlador.
+
+Esses registradores são acessados diretamente por meio do ponteiro i2c0_regs, que aponta para a memória mapeada do controlador.
+
+###### Configuração do Acelerômetro
+
+Os registradores do ADXL456 são acessados enviando comandos via barramento I2C. Para escrever um valor em um registrador, o processador escreve no registrador de comando do I2C (**I2C0_DATA_CMD**) os dados que deseja enviar. Similarmente, para ler um registrador, o processador envia uma solicitação de leitura via I2C e, em seguida, aguarda até que o dado solicitado seja recebido no registrador **I2C0_RXFLR**.
+
+Os principais registradores do acelerômetro utilizados neste processo incluem:
+
+- **DATA_FORMAT (0x31)**: Configura o formato de dados do acelerômetro (sensibilidade ±16g no caso).
+- **BW_RATE (0x2C)**: Define a taxa de amostragem (200 Hz no caso).
+- **DATA_X0 (0x32)** e DATA_X1 (0x33): Contêm os dados do eixo X em dois bytes (pouca e muita ordem).
+
+###### Calibração e leitura ajustada do Eixo X
+
+Antes de realizar as leituras definitivas do acelerômetro, foi necessário calibrar o eixo X para ajustar as futuras leituras. Essa calibração foi realizada armazenando o valor do eixo X quando a placa estava posicionada em 180 graus, e utilizando esse valor como offset nas leituras subsequentes.
+
+E após isso, foi implementada uma função para ler o valor ajustado do eixo X, subtraindo o offset obtido durante a calibração.
+
+#### Tetris
 
 Para recriar uma versão fiel do jogo, foi feita uma analise no jogo original. As percepções dos mecanismos usados foram traduzidas para uma aplicação prática no projeto. No projeto, foi aplicado os conceitos do Tetris da seguinte forma. 
 	
@@ -139,7 +183,4 @@ O primeiro passo do código é conseguir manipular o Acelerômetro para obter da
 
 Using the Accelerometer on DE-Series Boards. Disponível em: https://github.com/fpgacademy/Tutorials/releases/download/v21.1/Accelerometer.pdf. Acessado em: 23 de setembro de 2024.
 
-####
-
-
-
+https://embarcados.com.br/comunicacao-i2c/
