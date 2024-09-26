@@ -171,9 +171,77 @@ Para recriar uma versão fiel do jogo, foi feita uma analise no jogo original. A
 
 Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o intuito de armazenar as configurações do projeto (config.c) como altura e largura da tela do VGA, construção do tetrôminó entre outras. Já o outro arquivo (main.c) executa o jogo, armazenando as funções implicitas nos conceitos expostos acima.
 
-O primeiro passo do código é conseguir manipular o Acelerômetro para obter dados de movimentação do usuário através da abertura das pasta "/dev/mem" e mapeamento da memória do I2C. Depois, 
+##### Fluxo do Jogo
 
+- Iniciar variáveis
+- Loop principal(sair != false)
+	- Loop da partida(gameOver != true)
+		- Se houver tetromino flutuante:
+			- Se o timer da gravidade estiver no máximo:
+				- Mover o tetromino para baixo
+				- Se houver colisão:
+					- Congelar o tetromino
+					- tetrominoFlutuanteExiste = false
+				- Resetar timer
+			- Caso não: timer++
+			- Se o timer do input de movimento estiver no máximo:
+				- Mover o tetromino na direção da inclinação do acelerômetro
+				- Resetar timer
+			- Caso não: timer++
+		- Se não houver tetromino flutuante:
+			- Limpar linhas completas se existirem
+			- Gerar um novo tetromino flutuante
+			- Se houver colisão no resurgimento do tetromino flutuante: 
+				- estado do jogo = game over
+			- Se não: 
+				- tetrominoFlutuanteExiste = true
+		- Receber input dos botões e chaves
+		- Realizar ações conforme os inputs
+			- Pause
+			- Reset
+			- Girar tetromino
+			- Guardar tetromino
+		- Atualizar tela do jogo
+		- Voltar ao loop da partida
+	- Se o jogo estiver em "game over":
+		- Mostrar tela de GameOver
+		- Aguardar input do usuário para reiniciar o jogo
+		- Resetar jogo
+		- gameOver = false
+		- Voltar ao loop principal
 
+##### Manual
+###### Para execução
+1. Baixar o source code 
+2. Executar: `make all` no terminal, no mesmo diretório do source code
+###### Controles
+- Chaves (da direita para a esquera)
+	- Chave 1 : Resetar jogo
+	- Chave 2 : Pausar jogo / Ver controles
+	- Chave 2 : Sair (necessário pause e reset desligado)
+- Botões (da direita para a esquerda)
+	- Botão 1 : Girar peça no sentido horário
+	- Botão 2 : Girar peça no sentido anti-horário
+	- Botão 3 : Guardar peça
+	- Botão 4 : Girar peça 180°
+- Acelerômetro
+	- Com os botões e chaves da placa posicionados em sua direção
+	- Inclinar a placa para a esquerda : Movimentar a peça para a esquerda
+	- Inclinar a placa para a direita : Movimentar a peça para a direita
+###### Jogando
+- Após executar o source code, a primeira tela do jogo será o menu
+	- Pressione qualquer botão para iniciar o jogo
+- Após iniciar o jogo, utilize os botões e o acelerômetro para jogar
+	- A cada nova peça, o jogador pode optar em trocar pela peça guardada, apenas uma vez
+- Acione as chaves de pause, reset e sair a qualquer momento
+	- Mantenha apenas uma ligada por vez
+	- A chave sair só encerrará o jogo se NÃO estiver em estado de pause ou reset
+	- A chave pause esconde a tela de jogo e mostra os controles
+	- Para despausar basta voltar a chave ao estado inicial
+	- Após acionar o reset, sempre retorne a chave ao estado inicial, para então realizar qualquer outra ação
+- Ao perder no jogo a tela de Game Over aparecerá
+	- Tenha certeza de que o pause e reset estão desligados
+	- Pressione qualquer botão para jogar novamente
 
 <div align="justify">
 
