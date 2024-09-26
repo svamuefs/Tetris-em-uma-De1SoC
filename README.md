@@ -76,7 +76,7 @@ O jogo foi elaborado em lingagem C por ser um requisito do problema, sendo usado
 
 ## Metodologia 
 
-Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão de processos para abstração do projeto. A primeira parte é o <a href="#-acelerômetro"> acelerômetro</a>, caracterizada pela comunicação do programa em C com o próprio via I2C. Já a segunda parte é o jogo <a href="#-tetris"> Tetris</a>, onde engloba todas as nuâncias do jogo.  E partindo dessa abstração, a equipe se dividiu para encontrar soluções.
+Inicialmente, foi feito o levantamento de requisitos do problema, onde foi obtida uma divisão de processos para abstração do projeto. A primeira parte é o <a href="#acelerômetro"> acelerômetro</a>, caracterizada pela comunicação do programa em C com o próprio via I2C. Já a segunda parte é o jogo <a href="#tetris"> Tetris</a>, onde engloba todas as nuâncias do jogo.  E partindo dessa abstração, a equipe se dividiu para encontrar soluções.
 
 A seguir, é demonstrado a descrição em alto nível de cada etapa citada.
 
@@ -106,14 +106,13 @@ Além disso, o código também define os registradores do controlador I2C, como 
 
 ###### Mapeamento da memória do I2C
 
-O acesso aos registradores do controlador I2C do processador é feito diretamente através do mapeamento de memória física. O mapeamento da memória do controlador I2C é realizado utilizando o */dev/mem*, um arquivo especial no Linux que expõe áreas de memória física do sistema para leitura e escrita.
+Referente ao mapeamento, o acesso aos registradores do controlador I2C do processador é feito diretamente através do mapeamento de memória física. Isso é realizado utilizando o */dev/mem*, um arquivo especial no Linux que expõe áreas de memória física do sistema para leitura e escrita.
 
 A função *mmap* mapeia essa área de memória para o espaço de endereços do processo do usuário, permitindo o acesso direto aos registradores de controle de hardware. O procedimento foi realizado com a função *open_and_map()* com o retorno de um inteiro, representando o descritor do arquivo.
 
 ###### Inicialização do protocolo
 
-
-O processo de inicialização do I2C envolve a configuração de valores específicos nos registradores do controlador no processador. Isso inclui habilitar o controlador I2C, definir o clock (configurando os registradores **I2C0_FS_SCL_HCNT** e **I2C0_FS_SCL_LCNT**), além de atribuir o endereço do acelerômetro, que é **0x53**.
+Já o processo de inicialização do I2C, envolve a configuração de valores específicos nos registradores do controlador no processador. Isso inclui habilitar o controlador I2C, definir o clock (configurando os registradores **I2C0_FS_SCL_HCNT** e **I2C0_FS_SCL_LCNT**), além de atribuir o endereço do acelerômetro, que é **0x53**.
 
 Os principais registradores utilizados incluem:
 
@@ -121,11 +120,11 @@ Os principais registradores utilizados incluem:
 - **I2C0_TAR:** Define o endereço do dispositivo slave.
 - **I2C0_CON:** Configura o modo de operação (master/slave) e outras características do controlador.
 
-Esses registradores são acessados diretamente por meio do ponteiro i2c0_regs, que aponta para a memória mapeada do controlador.
+Esses registradores são acessados diretamente por meio do ponteiro *i2c0_regs*, que aponta para a memória mapeada do controlador.
 
 ###### Configuração do Acelerômetro
 
-Os registradores do ADXL456 são acessados enviando comandos via barramento I2C. Para escrever um valor em um registrador, o processador escreve no registrador de comando do I2C (**I2C0_DATA_CMD**) os dados que deseja enviar. Similarmente, para ler um registrador, o processador envia uma solicitação de leitura via I2C e, em seguida, aguarda até que o dado solicitado seja recebido no registrador **I2C0_RXFLR**.
+Para realizar o ajuste do acelerômetro, faz-se necessário escrever um valor no registrador dele. E isso se da através de uma escrita dos dados que deseja enviar no registrador de comando do I2C (**I2C0_DATA_CMD**). Similarmente, para ler um registrador, o processador envia uma solicitação de leitura via I2C e, em seguida, aguarda até que o dado solicitado seja recebido no registrador **I2C0_RXFLR**.
 
 Os principais registradores do acelerômetro utilizados neste processo incluem:
 
@@ -135,9 +134,9 @@ Os principais registradores do acelerômetro utilizados neste processo incluem:
 
 ###### Calibração e leitura ajustada do Eixo X
 
-Antes de realizar as leituras definitivas do acelerômetro, foi necessário calibrar o eixo X para ajustar as futuras leituras. Essa calibração foi realizada armazenando o valor do eixo X quando a placa estava posicionada em 180 graus, e utilizando esse valor como offset nas leituras subsequentes.
+Antes das leituras definitivas do acelerômetro, faz-se necessário uma calibração do eixo X para ajustar as futuras leituras. Essa calibração é realizada armazenando o valor do eixo X quando a placa estava posicionada em 180 graus, e utilizando esse valor como offset nas leituras subsequentes.
 
-E após isso, foi implementada uma função para ler o valor ajustado do eixo X, subtraindo o offset obtido durante a calibração.
+Para leitura do valor do eixo X, os registradores DATA_X0 e DATA_X1 são combinados em um valor de 16 bits. Esse processo desloca o byte mais significativo para a esquerda e soma o byte menos significativo, formando o valor completo do eixo X.
 
 #### Tetris
 
@@ -175,7 +174,6 @@ Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o 
 O primeiro passo do código é conseguir manipular o Acelerômetro para obter dados de movimentação do usuário através da abertura das pasta "/dev/mem" e mapeamento da memória do I2C. Depois, 
 
 
-## Conclusão
 
 <div align="justify">
 
@@ -183,4 +181,10 @@ O primeiro passo do código é conseguir manipular o Acelerômetro para obter da
 
 Using the Accelerometer on DE-Series Boards. Disponível em: https://github.com/fpgacademy/Tutorials/releases/download/v21.1/Accelerometer.pdf. Acessado em: 23 de setembro de 2024.
 
-https://embarcados.com.br/comunicacao-i2c/
+TERASIC. DE1-SoC User-Manual. Disponível em: https://drive.google.com/file/d/1HzYtd1LwzVC8eDobg0ZXE0eLhyUrIYYE/view. Acessado em: 26 de setembro de 2024.
+
+FPGA Academy. Disponível em: https://fpgacademy.org/. Acessado em: 26 de setembro de 2024.
+
+SOUZA, Fábio. Comunicação I2C. Postado em: 03 de janeiro de 2023. Disponível em: https://embarcados.com.br/comunicacao-i2c/. Acessado em: 26 de setembro de 2024.
+
+PATTERSON, David A.; HENNESSY, John L. Computer Organization and Design: The Hardware Software Interface, ARM Edition. 2016. Morgan Kaufmann. ISBN: 978-0-12-801733-3.
