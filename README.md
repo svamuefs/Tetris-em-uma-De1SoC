@@ -173,43 +173,11 @@ Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o 
 
 ##### Fluxo do Jogo
 
-- Iniciar variáveis
-- Loop principal(sair != false)
-	- Loop da partida(gameOver != true)
-		- Se houver tetromino flutuante:
-			- Se o timer da gravidade estiver no máximo:
-				- Mover o tetromino para baixo
-				- Se houver colisão:
-					- Congelar o tetromino
-					- tetrominoFlutuanteExiste = false
-				- Resetar timer
-			- Caso não: timer++
-			- Se o timer do input de movimento estiver no máximo:
-				- Mover o tetromino na direção da inclinação do acelerômetro
-				- Resetar timer
-			- Caso não: timer++
-		- Se não houver tetromino flutuante:
-			- Limpar linhas completas se existirem
-			- Gerar um novo tetromino flutuante
-			- Se houver colisão no resurgimento do tetromino flutuante: 
-				- estado do jogo = game over
-			- Se não: 
-				- tetrominoFlutuanteExiste = true
-		- Receber input dos botões e chaves
-		- Realizar ações conforme os inputs
-			- Pause
-			- Reset
-			- Girar tetromino
-			- Guardar tetromino
-		- Atualizar tela do jogo
-		- Voltar ao loop da partida
-	- Se o jogo estiver em "game over":
-		- Mostrar tela de GameOver
-		- Aguardar input do usuário para reiniciar o jogo
-		- Resetar jogo
-		- gameOver = false
-		- Voltar ao loop principal
-![[images/tetris.png]]
+<p align="center">
+  <img src="imagens/FluxogramaTetris.png" width = "800" />
+</p>
+<p align="center"><strong>Fluxograma do Jogo</strong></p>
+
 ##### Manual
 ###### Para execução
 1. Baixar o source code 
