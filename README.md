@@ -209,7 +209,7 @@ Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o 
 		- Resetar jogo
 		- gameOver = false
 		- Voltar ao loop principal
-
+![[images/tetris.png]]
 ##### Manual
 ###### Para execução
 1. Baixar o source code 
