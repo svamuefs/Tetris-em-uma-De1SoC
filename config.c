@@ -5,29 +5,29 @@
 
 #define video_BLACK 0x00
 #define video_GRAY 0x9990
-#define QUADRADO_LADO 10 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
+#define QUADRADO_LADO 8 // Tamanho em pixels do lado dos quadrados a serem mostrados na tela
 
 #define MARGEM_ESQUERDA_HOLD 0 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_HOLD 7 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_HOLD 13 // Em quantidade de quadrados(QUADRADO_LADO)
 
 #define MARGEM_ESQUERDA_TABULEIRO 5 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_TABULEIRO 7 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_TABULEIRO 13 // Em quantidade de quadrados(QUADRADO_LADO)
 
 #define MARGEM_ESQUERDA_PREVIEW 16 // Em quantidade de quadrados(QUADRADO_LADO)
-#define MARGEM_TOPO_PREVIEW 7 // Em quantidade de quadrados(QUADRADO_LADO)
+#define MARGEM_TOPO_PREVIEW 13 // Em quantidade de quadrados(QUADRADO_LADO)
 #define SEPARACAO_PREVIEW 0 // Em quantidade de quadrados(QUADRADO_LADO)
 
-#define MARGEM_ESQUERDA_TITLE 0 //Em pixels
+#define MARGEM_ESQUERDA_TITLE 1 //Em pixels
 #define MARGEM_TOPO_TITLE 10 //Em pixels
 
 #define MARGEM_ESQUERDA_GAMEOVER 20 // Em pixels
 #define MARGEM_TOPO_GAMEOVER 2 // Em pixels
 
-#define MARGEM_ESQUERDA_PAUSE 0 // Em pixels
+#define MARGEM_ESQUERDA_PAUSE 15 // Em pixels
 #define MARGEM_TOPO_PAUSE 35 // Em pixels
 
 #define MARGEM_ESQUERDA_SCORE 0 // Em pixels
-#define MARGEM_TOPO_SCORE 15 // Em pixels
+#define MARGEM_TOPO_SCORE 25 // Em pixels
 
 #define QUANTIDADE_TETROMINOS 7 //Quantidade de tetrominos no jogo
 #define BLOCOS_POR_PECA 4 // Quantidade de blocos que compõe as peças
@@ -39,9 +39,9 @@
 #define COLUNAS_TABULEIRO 10 // Quantidade de linhas de blocos no tabuleiro, contando com paredes
 
 #define TICKS 60// Quantas vezes a main é executada em um único segundo
-#define COOLDOWN_GRAVIDADE 15 // Tempo em ticks do cooldown da gravidade
-#define COOLDOWN_INPUT 12 // Tempo em ticks do cooldown para input do jogador
-#define INPUT_INCLINACAO 30 // Inclinação necessaria para aceitar o input do jogador
+#define COOLDOWN_GRAVIDADE 35 // Tempo em ticks do cooldown da gravidade
+#define COOLDOWN_INPUT 15 // Tempo em ticks do cooldown para input do jogador
+#define INPUT_INCLINACAO 50 // Inclinação necessaria para aceitar o input do jogador
 
 #define TUTORIAL_TEXT "Botão 1 : Pause/Start\nBotão 2 : Reset\nBotão 3 : Giro Anti Horário\nBotão 4 : Giro Horário\n"
 #define PAUSE_TEXT "Jogo Pausado!\nPressione Pause ou Reset(Botão 1 e 2)"
@@ -159,14 +159,14 @@ char GAMEOVER_GRAPHIC[19][60] =
 "|  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$",
 " \\______/     \\_/    |________/|__/  |__/",
 "",
-"--- Reset Off and Press Hold to Play Again ---"
+"--- Reset Off and Press any Key to Play Again ---"
 };
 
 char PAUSE_GRAPHIC[13][60] = {
-" ____   __   _  _  ____  ____ ",
-"(  _ \\ / _\\ / )( \\/ ___)(  __)",
-" ) __//    \\) \\/ (\\___ \\ ) _) ",
-"(__)  \\_/\\_/\\____/(____/(____)",
+"            ____   __   _  _  ____  ____ ",
+"           (  _ \\ / _\\ / )( \\/ ___)(  __)",
+"            ) __//    \\) \\/ (\\___ \\ ) _) ",
+"           (__)  \\_/\\_/\\____/(____/(____)",
 "",
 "[------------------ Controls ---------------------]",
 "|________Switchs________|_________Buttons_________|",
