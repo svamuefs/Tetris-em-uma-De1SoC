@@ -1,4 +1,4 @@
-// /* Criação de um jogo inspirado em Tetris para ser executado em uma DE1-SoC
+		// /* Criação de um jogo inspirado em Tetris para ser executado em uma DE1-SoC
 //  - Os tetrominos serão movimentados pelo jogador por meio do acelerômetro
 //  - Todos os itens visuais serão exibidos por meio da interface VGA
 //  - Botões serão utilizados para: reiniciar, pausar e continuar o jogo
@@ -22,6 +22,12 @@
 
 bool sair = false;
 
+void encerrarJogo()
+{
+	sair = true;
+	raise(SIGTERM);
+}
+
 //Funções
 
 //do Sistema
@@ -33,6 +39,8 @@ void ImprimirTetromino(Tetromino *tetromino, int x, int y);
 void ImprimirTela(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], Tetromino *tetrominoFlutuante,
 					Tetromino *tetrominoHold, Tetromino tetrominoPreview[TAMANHO_PREVIEW], int *score);
 void ImprimirGameOver();
+void ImprimirPause();
+void ImprimirGameTitle(int indexCor);
 void Resetar(int tabuleiro[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], bool *pecaFlutuanteExiste, Tetromino tetrominoPreview[TAMANHO_PREVIEW]);
 void Pause();
 
@@ -56,7 +64,7 @@ int main() {
 	//Setup
 
 	//Configurar signal para encerrar jogo ao usuario usar Ctrl + C
-	signal(SIGINT, SIGTERM);
+	signal(SIGINT, encerrarJogo);
 	srand(time(NULL)); //seed de aleatoriedade
 
 	//Mapeamento e acesso do /dev/mem para acessar o acelerometro via I2C
@@ -81,7 +89,7 @@ int main() {
 	// Variáveis de controle do jogo
 
 		bool pecaFlutuanteExiste = false;  
-		bool gameOver = true;
+		bool gameOver = false;
 
 		int linhasCheias[BLOCOS_POR_PECA];
 		int cooldownGravidade = 0;
@@ -100,9 +108,42 @@ int main() {
 
 	int score = 0;
 
+	FILE *pFileScore;
+
 	// Resetar/Preparar jogo
 	Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
 
+	video_erase();
+	video_clear();
+	video_show();
+
+	KEY_read(&inputKEY);
+	int indexCor = 1;
+
+	while (inputKEY == 0)
+	{
+		KEY_read(&inputKEY);
+		Delay(0.3);
+
+		video_clear();
+		ImprimirGameTitle(indexCor);
+		video_text(29,37,"Press any key to start!");
+		if (indexCor < 9) 
+		{
+			indexCor ++;
+		} 	
+		else 
+		{
+			indexCor = 1;
+		}
+		video_show();
+	}
+
+	Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
+	score = 0;
+	video_erase();
+	gameOver = false;
+	
 	// Loop Principal
 	while(!sair)
 	{
@@ -213,16 +254,26 @@ int main() {
 
 		/* O reset deve está desligado e o jogador deve pressionar hold
 		para reiniciar o jogo*/
-		while (inputSW != 0 || inputKEY != 8)
+		while (inputSW != 0 || inputKEY == 0)
 		{
 			SW_read(&inputSW);
 			KEY_read(&inputKEY);
 			Delay(1/10);
 		}
 
-		Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);
-        score = 0;
+		Resetar(tabuleiro, &pecaFlutuanteExiste, tetrominoPreview);	
 		video_erase();
+
+		pFileScore = fopen("scores.txt", "a");
+
+		char textoScore[15];
+   	 	sprintf(textoScore, "\n%d", score);
+
+		fprintf(pFileScore, textoScore);
+
+		fclose(pFileScore);	
+        score = 0;
+
 		gameOver = false;
 
 	}
@@ -242,10 +293,10 @@ void ReceberInput(bool *gameOver, bool *hold, bool *flip, int *sentido)
 
 	*sentido = 0;
 
-	if (input == 8) {
+	if (input == 4) {
 		*hold = true;
 	}
-	else if (input == 4)
+	else if (input == 8)
 	{
 		*flip = true;
 	}
@@ -657,7 +708,7 @@ void LimpaLinhas(int tabuleiroColisao[LINHAS_TABULEIRO][COLUNAS_TABULEIRO], int 
 			}
 			tabuleiroColisao[0][0] = 1;
 			tabuleiroColisao[0][COLUNAS_TABULEIRO] = 1;
-			*score += 100;
+			*score += 100*(k+1);
 			video_erase();
 		}
 	}
