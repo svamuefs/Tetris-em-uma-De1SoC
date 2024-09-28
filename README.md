@@ -14,11 +14,18 @@
   <li><a href="https://github.com/Viktor-401">Sinval Victor</a></li>
 </ul>
 
+<p align="center">
+  <img src="imagens/GrupoTetris.gif" width = "400" />
+</p>
+
 <div align="justify"> 
 
 ## Introdução
 
 Este relatório técnico apresenta o desenvolvimento de um jogo no estilo Tetris utilizando a plataforma de desenvolvimento DE1-SoC com arquitetura ARMv8. E para isso, foi necessário a aplicação prática dos conceitos de programação em C pra fazer o Tetris, criação de biblioteca do acelerômetro usando mapeamento de memória via I2C, controle de dispositivos de entrada (botões e chaves) e saída (interface VGA) disponíveis na placa. Ao decorrer da leitura, são descritas as decisões tomadas, resultados obtidos e lições aprendidas durante o processo.
+<p align="center">
+  <img src="imagens/tetris.gif" width = "400" />
+</p>
 
 ## Fundamentação Teórica
 
@@ -196,6 +203,11 @@ Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o 
 	- Com os botões e chaves da placa posicionados em sua direção
 	- Inclinar a placa para a esquerda : Movimentar a peça para a esquerda
 	- Inclinar a placa para a direita : Movimentar a peça para a direita
+
+<p align="center">
+  <img src="imagens/PauseImage.jpg" width = "600" />
+</p>
+
 ###### Jogando
 - Após executar o source code, a primeira tela do jogo será o menu
 	- Pressione qualquer botão para iniciar o jogo
@@ -210,6 +222,12 @@ Para aplicar essa estrutura, foram criados dois arquivos de código C, um tem o 
 - Ao perder no jogo a tela de Game Over aparecerá
 	- Tenha certeza de que o pause e reset estão desligados
 	- Pressione qualquer botão para jogar novamente
+
+<p align="center">
+  <img src="imagens/ScoreLinha2x.gif" width = "500" />
+  <img src="imagens/GameOver.gif" width = "500" />
+</p>
+
 
 <div align="justify">
 
